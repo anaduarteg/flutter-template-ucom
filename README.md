@@ -14,3 +14,17 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+# Programacion de Dispositivos Moviles
+
+Aplicación móvil para gestión de estacionamiento inteligente.
+
+---
+> - 💻 Ana Duarte
+
+---
+## Evidencia de Entornos
+
+---
+![image](https://github.com/user-attachments/assets/72ce898e-462b-4443-85bb-a323142a20b9)
+
