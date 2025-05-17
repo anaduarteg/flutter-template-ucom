@@ -38,7 +38,7 @@ class _TopUpSucessScreenState extends State<TopUpSucessScreen> {
                   ),
                   const SizedBox(height: 30),
                   Text(
-                    "Top Up Success",
+                    "Recarga Exitosa",
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,

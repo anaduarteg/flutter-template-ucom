@@ -53,7 +53,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                     ),
                   ),
                   Text(
-                    "Statistic",
+                    "Estadísticas",
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -75,7 +75,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Spending",
+                          "Gastos",
                           style:
                               Theme.of(context).textTheme.titleLarge!.copyWith(
                                     fontSize: 16,
@@ -101,7 +101,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            "-3.1% from last month",
+                            "-3.1% desde el mes pasado",
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge!
@@ -142,7 +142,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                         homeController.isYear.value = false;
                       });
                     },
-                    "Week",
+                    "Semana",
                   ),
                   cardView(
                     context,
@@ -161,7 +161,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                         homeController.isYear.value = false;
                       });
                     },
-                    "Month",
+                    "Mes",
                   ),
                   cardView(
                     context,
@@ -180,7 +180,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                         homeController.isYear.value = true;
                       });
                     },
-                    "Year",
+                    "Año",
                   )
                 ],
               ),
@@ -221,7 +221,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                                               const EdgeInsets.only(right: 16),
                                           child: circleCard(
                                             context,
-                                            "Food",
+                                            "Comida",
                                             HexColor(
                                                 AppTheme.primaryColorString!),
                                           ),
@@ -231,7 +231,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                                               const EdgeInsets.only(right: 16),
                                           child: circleCard(
                                             context,
-                                            "Bills",
+                                            "Facturas",
                                             HexColor('#907FFA'),
                                           ),
                                         ),
@@ -240,7 +240,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                                               const EdgeInsets.only(right: 16),
                                           child: circleCard(
                                             context,
-                                            "Gadget",
+                                            "Gadgets",
                                             HexColor('#CCCACF'),
                                           ),
                                         ),
@@ -249,7 +249,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                                               const EdgeInsets.only(right: 16),
                                           child: circleCard(
                                             context,
-                                            "Food",
+                                            "Comida",
                                             HexColor(
                                                 AppTheme.primaryColorString!),
                                           ),
@@ -301,10 +301,10 @@ class _StatisticsViewState extends State<StatisticsView> {
                               children: [
                                 Text(
                                   homeController.isWeek.value == true
-                                      ? "This Week"
+                                      ? "Esta Semana"
                                       : homeController.isMonth.value == true
-                                          ? "This Month"
-                                          : "This Year",
+                                          ? "Este Mes"
+                                          : "Este Año",
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge!
@@ -314,7 +314,7 @@ class _StatisticsViewState extends State<StatisticsView> {
                                       ),
                                 ),
                                 Text(
-                                  "See all",
+                                  "Ver todo",
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge!

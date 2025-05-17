@@ -37,7 +37,7 @@ class _TransferSucessScreenState extends State<TransferSucessScreen> {
           ),
         ),
         title: Text(
-          "Transfer Success",
+          "Transferencia Exitosa",
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
@@ -246,7 +246,7 @@ class _TransferSucessScreenState extends State<TransferSucessScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Transfer Amount",
+                                    "Monto de Transferencia",
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyLarge!
@@ -288,7 +288,7 @@ class _TransferSucessScreenState extends State<TransferSucessScreen> {
                                           const Duration(milliseconds: 500));
                                 },
                                 child: Text(
-                                  "History Transactions",
+                                  "Historial de Transacciones",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge!
@@ -340,7 +340,7 @@ class _TransferSucessScreenState extends State<TransferSucessScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  "Print",
+                                  "Imprimir",
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge!
@@ -374,7 +374,7 @@ class _TransferSucessScreenState extends State<TransferSucessScreen> {
                               ),
                               child: Center(
                                 child: Text(
-                                  "Done",
+                                  "Listo",
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge!

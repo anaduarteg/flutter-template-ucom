@@ -195,7 +195,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                         child: Row(
                                           children: [
                                             Text(
-                                              "Finpay debit card.",
+                                              "Tarjeta de débito Finpay.",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall!
@@ -207,7 +207,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                                   ),
                                             ),
                                             Text(
-                                              " Learn more",
+                                              " Saber más",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall!

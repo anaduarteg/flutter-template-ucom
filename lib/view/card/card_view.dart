@@ -44,7 +44,7 @@ class CardView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "My cards",
+                        "Mis Tarjetas",
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,

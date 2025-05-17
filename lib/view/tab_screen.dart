@@ -79,7 +79,7 @@ class _TabScreenState extends State<TabScreen> {
                             .withOpacity(0.4),
               ),
             ),
-            label: "home",
+            label: "Inicio",
           ),
           BottomNavigationBarItem(
             icon: SizedBox(
@@ -95,7 +95,7 @@ class _TabScreenState extends State<TabScreen> {
                             .withOpacity(0.4),
               ),
             ),
-            label: "Statistics",
+            label: "Estadísticas",
           ),
           BottomNavigationBarItem(
               icon: SizedBox(
@@ -111,7 +111,7 @@ class _TabScreenState extends State<TabScreen> {
                               .withOpacity(0.4),
                 ),
               ),
-              label: "Card"),
+              label: "Tarjeta"),
           BottomNavigationBarItem(
               icon: SizedBox(
                 height: 20,
@@ -126,7 +126,7 @@ class _TabScreenState extends State<TabScreen> {
                               .withOpacity(0.4),
                 ),
               ),
-              label: "profile"),
+              label: "Perfil"),
         ],
 
         // height: 60,
