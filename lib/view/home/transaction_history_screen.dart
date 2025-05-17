@@ -48,7 +48,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           ),
         ),
         title: Text(
-          "History",
+          "Historial",
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
@@ -70,7 +70,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               child: Column(children: [
                 const SizedBox(height: 16),
                 CustomTextField(
-                  hintText: "Search",
+                  hintText: "Buscar",
                   widget: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SvgPicture.asset(
@@ -105,7 +105,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                               padding:
                                   const EdgeInsets.only(left: 16, right: 16),
                               child: Text(
-                                "Today",
+                                "Hoy",
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
@@ -178,7 +178,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "Save more money up to 50% using your",
+                                        "Ahorra hasta un 50% usando tu",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall!
@@ -236,7 +236,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                     padding: const EdgeInsets.only(
                                         left: 16, right: 16),
                                     child: Text(
-                                      "Last 7 Day",
+                                      "Últimos 7 días",
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall!

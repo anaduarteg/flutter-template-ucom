@@ -117,7 +117,7 @@ class CardView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "Add card",
+                                      "Agregar tarjeta",
                                       style: Theme.of(Get.context!)
                                           .textTheme
                                           .titleLarge!
