@@ -44,7 +44,7 @@ Aplicación móvil para gestión de estacionamiento inteligente.
 ## Diseño de Reserva
 ![image](https://github.com/user-attachments/assets/fabd6707-7dc4-40c1-9508-3b745ca36011)
 ![image](https://github.com/user-attachments/assets/6b81872a-6e61-409e-a6be-a5256e05441a)
-![image](https://github.com/user-attachments/assets/1a9b61f6-6bfa-4efd-b882-f6c128724731)
+![image](https://github.com/user-attachments/assets/3726a838-5777-4383-a954-32a8b904fea9)
 
 
 
