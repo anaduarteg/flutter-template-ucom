@@ -46,5 +46,10 @@ Aplicación móvil para gestión de estacionamiento inteligente.
 ![image](https://github.com/user-attachments/assets/6b81872a-6e61-409e-a6be-a5256e05441a)
 ![image](https://github.com/user-attachments/assets/3726a838-5777-4383-a954-32a8b904fea9)
 
+---
+## Diseño de Pagar Reserva
+![image](https://github.com/user-attachments/assets/c3e49b3b-55c4-41b0-9106-1c364c2a1ebf)
+
+
 
 
