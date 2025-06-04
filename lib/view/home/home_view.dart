@@ -207,7 +207,7 @@ class HomeView extends StatelessWidget {
                       },
                       child: circleCard(
                         image: DefaultImages.topup,
-                        title: "Recargar",
+                        title: "Pagar",
                       ),
                     ),
                     InkWell(
@@ -241,7 +241,7 @@ class HomeView extends StatelessWidget {
                       },
                       child: circleCard(
                         image: DefaultImages.transfer,
-                        title: "Transferir",
+                        title: "Reservar",
                       ),
                     )
                   ],

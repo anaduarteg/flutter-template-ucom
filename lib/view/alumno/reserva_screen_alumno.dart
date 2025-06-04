@@ -25,16 +25,49 @@ class ReservaAlumnoScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        title: Text(
-          "Reservar Estacionamiento",
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: textColor,
+            size: 20,
+          ),
+          onPressed: () => Get.back(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Reservar",
           style: GoogleFonts.montserrat(
             color: textColor,
             fontWeight: FontWeight.w700,
-            fontSize: 24,
+                fontSize: 20,
             letterSpacing: 0.5,
           ),
         ),
-        iconTheme: IconThemeData(color: textColor),
+            Text(
+              "Estacionamiento",
+              style: GoogleFonts.montserrat(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.help_outline_rounded,
+              color: textColor,
+              size: 20,
+            ),
+            onPressed: () {
+              // TODO: Implementar ayuda
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -93,65 +126,15 @@ class ReservaAlumnoScreen extends StatelessWidget {
             _buildWeekCalendar(context, isDarkMode),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildSelectionCard(
-                      context,
-                      title: "Vehículo",
-                      icon: Icons.directions_car,
                       child: _buildVehiculoSelector(context, isDarkMode),
-                      isDarkMode: isDarkMode,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSelectionCard(
-                      context,
-                      title: "Piso",
-                      icon: Icons.layers,
-                      child: Obx(() {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: borderColor),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<Piso>(
-                              isExpanded: true,
-                              value: controller.pisoSeleccionado.value,
-                              hint: Text(
-                                "Seleccionar",
-                                style: GoogleFonts.montserrat(color: secondaryTextColor),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: _buildPisoSelector(context, isDarkMode),
                               ),
-                              onChanged: (p) => controller.seleccionarPiso(p!),
-                              items: controller.pisos.map((p) {
-                                return DropdownMenuItem(
-                                  value: p,
-                                  child: Text(
-                                    p.descripcion,
-                                    style: GoogleFonts.montserrat(color: textColor),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        );
-                      }),
-                      isDarkMode: isDarkMode,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            _buildSection(
-              context,
-              title: "Selecciona el lugar",
-              icon: Icons.local_parking,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: _buildLugaresGrid(context, isDarkMode),
-              isDarkMode: isDarkMode,
             ),
             _buildSection(
               context,
@@ -721,15 +704,10 @@ class ReservaAlumnoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSelectionCard(
-    BuildContext context, {
-    required String title,
-    required Widget child,
-    required bool isDarkMode,
-    IconData? icon,
-  }) {
+  Widget _buildVehiculoSelector(BuildContext context, bool isDarkMode) {
     return Container(
-      height: 160,
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDarkMode ? const Color(0xFF2D2D2D) : Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -744,38 +722,333 @@ class ReservaAlumnoScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          Row(
+            children: [
+              Icon(
+                Icons.directions_car,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "Selecciona tu vehículo",
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isDarkMode ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Obx(() {
+            if (controller.autosCliente.isEmpty) {
+              return const Center(
+                child: Text("No hay vehículos disponibles"),
+              );
+            }
+
+            return DropdownButtonFormField<Auto>(
+              value: controller.autoSeleccionado.value,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              hint: const Text("Selecciona un vehículo"),
+              items: controller.autosCliente.map((auto) {
+                return DropdownMenuItem(
+                  value: auto,
+                  child: Text("${auto.marca} ${auto.modelo} - ${auto.chapa}"),
+                );
+              }).toList(),
+              onChanged: (Auto? value) {
+                controller.autoSeleccionado.value = value;
+              },
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPisoSelector(BuildContext context, bool isDarkMode) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDarkMode ? const Color(0xFF2D2D2D) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: (isDarkMode ? Colors.black : Colors.grey).withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.layers,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "Selecciona el piso",
+                style: GoogleFonts.montserrat(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isDarkMode ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Obx(() {
+            if (controller.pisos.isEmpty) {
+              return const Center(
+                child: Text("No hay pisos disponibles"),
+              );
+            }
+
+            return DropdownButtonFormField<Piso>(
+              value: controller.pisoSeleccionado.value,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              hint: const Text("Selecciona un piso"),
+              items: controller.pisos.map((piso) {
+                return DropdownMenuItem(
+                  value: piso,
+                  child: Text(piso.descripcion),
+                );
+              }).toList(),
+              onChanged: (Piso? value) {
+                if (value != null) {
+                  controller.seleccionarPiso(value);
+                }
+              },
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLugaresGrid(BuildContext context, bool isDarkMode) {
+    return Container(
+      width: double.infinity,
             padding: const EdgeInsets.all(12),
-            child: Row(
+      decoration: BoxDecoration(
+        color: isDarkMode ? const Color(0xFF2D2D2D) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: (isDarkMode ? Colors.black : Colors.grey).withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (icon != null) ...[
+          Row(
+            children: [
                   Icon(
-                    icon,
+                Icons.local_parking,
                     color: Theme.of(context).colorScheme.primary,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
-                ],
                 Text(
-                  title,
+                "Selecciona el lugar",
                   style: GoogleFonts.montserrat(
-                    fontSize: 13,
+                  fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: isDarkMode ? Colors.white : Colors.black87,
-                    letterSpacing: 0.5,
                   ),
                 ),
               ],
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: child,
+          const SizedBox(height: 8),
+          Obx(() {
+            if (controller.pisoSeleccionado.value == null) {
+              return Center(
+                child: Text(
+                  "Selecciona un piso primero",
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                ),
+              );
+            }
+
+            final lugares = controller.lugaresDisponibles
+                .where((l) => l.codigoPiso == controller.pisoSeleccionado.value?.codigo)
+                .toList();
+
+            if (lugares.isEmpty) {
+              return Center(
+                child: Text(
+                  "No hay lugares disponibles en este piso",
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12,
+                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildLegendItem(
+                        color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100,
+                        label: "Disponible",
+                        isDarkMode: isDarkMode,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildLegendItem(
+                        color: isDarkMode ? Colors.red.shade900 : Colors.red.shade100,
+                        label: "Reservado",
+                        isDarkMode: isDarkMode,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildLegendItem(
+                        color: isDarkMode ? Colors.green.shade900 : Colors.green.shade100,
+                        label: "Seleccionado",
+                        isDarkMode: isDarkMode,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 160,
+                  child: GridView.count(
+                    crossAxisCount: 5,
+                    crossAxisSpacing: 6,
+                    mainAxisSpacing: 6,
+                    childAspectRatio: 1.0,
+                    children: lugares.map((lugar) {
+                      final seleccionado = lugar == controller.lugarSeleccionado.value;
+                      final color = lugar.estado == "RESERVADO"
+                          ? (isDarkMode ? Colors.red.shade900 : Colors.red.shade100)
+                          : seleccionado
+                              ? (isDarkMode ? Colors.green.shade900 : Colors.green.shade100)
+                              : (isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100);
+
+                      return GestureDetector(
+                        onTap: lugar.estado == "DISPONIBLE"
+                            ? () => controller.seleccionarLugar(lugar)
+                            : null,
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: color,
+                            border: Border.all(
+                              color: seleccionado
+                                  ? (isDarkMode ? Colors.green.shade400 : Colors.green)
+                                  : (isDarkMode ? Colors.grey[800]! : Colors.grey[300]!),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            boxShadow: seleccionado
+                                ? [
+                                    BoxShadow(
+                                      color: (isDarkMode ? Colors.green.shade400 : Colors.green)
+                                          .withOpacity(0.3),
+                                      blurRadius: 4,
+                                      spreadRadius: 1,
+                                    )
+                                  ]
+                                : null,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                lugar.codigoLugar,
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  color: lugar.estado == "RESERVADO"
+                                      ? (isDarkMode ? Colors.red.shade300 : Colors.red)
+                                      : seleccionado
+                                          ? (isDarkMode ? Colors.green.shade300 : Colors.green)
+                                          : (isDarkMode ? Colors.white : Colors.black87),
+                                ),
+                              ),
+                              const SizedBox(height: 1),
+                              Text(
+                                lugar.descripcionLugar,
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 8,
+                                  color: lugar.estado == "RESERVADO"
+                                      ? (isDarkMode ? Colors.red.shade300 : Colors.red)
+                                      : seleccionado
+                                          ? (isDarkMode ? Colors.green.shade300 : Colors.green)
+                                          : (isDarkMode ? Colors.white70 : Colors.black54),
             ),
           ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegendItem({
+    required Color color,
+    required String label,
+    required bool isDarkMode,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(3),
+            border: Border.all(
+              color: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+              width: 1,
+            ),
+          ),
+        ),
+        const SizedBox(width: 2),
+        Text(
+          label,
+          style: GoogleFonts.montserrat(
+            fontSize: 10,
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+          ),
+        ),
+      ],
     );
   }
 
@@ -1019,161 +1292,6 @@ class ReservaAlumnoScreen extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-
-  Widget _buildVehiculoSelector(BuildContext context, bool isDarkMode) {
-    final marcas = [
-      'Toyota', 'Honda', 'Ford', 'Chevrolet', 'Volkswagen', 'Nissan', 'Hyundai',
-      'Kia', 'BMW', 'Mercedes-Benz', 'Audi', 'Lexus', 'Mazda', 'Subaru', 'Mitsubishi',
-      'Suzuki', 'Jeep', 'Dodge', 'Chrysler', 'Fiat', 'Peugeot', 'Renault', 'Citroën',
-      'Volvo', 'Porsche', 'Jaguar', 'Land Rover', 'Mini', 'Smart', 'Tesla'
-    ];
-
-    return Column(
-      children: [
-        Obx(() => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: controller.autoSeleccionado.value?.marca ?? controller.marcaSeleccionada.value,
-              hint: Text(
-                "Seleccionar marca",
-                style: GoogleFonts.montserrat(
-                  color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                  fontSize: 13,
-                ),
-              ),
-              onChanged: (marca) {
-                if (marca != null) {
-                  controller.actualizarVehiculoSeleccionado(marca);
-                }
-              },
-              items: marcas.map((marca) {
-                return DropdownMenuItem(
-                  value: marca,
-                  child: Text(
-                    marca,
-                    style: GoogleFonts.montserrat(
-                      color: isDarkMode ? Colors.white : Colors.black87,
-                      fontSize: 13,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        )),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: TextField(
-            controller: controller.matriculaController,
-            style: GoogleFonts.montserrat(
-              color: isDarkMode ? Colors.white : Colors.black87,
-              fontSize: 13,
-            ),
-            decoration: InputDecoration(
-              hintText: "Ingrese la matrícula",
-              hintStyle: GoogleFonts.montserrat(
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                fontSize: 13,
-              ),
-              border: InputBorder.none,
-            ),
-            onChanged: (value) {
-              if (value.isNotEmpty && controller.marcaSeleccionada.value != null) {
-                controller.actualizarMatricula(value);
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLugaresGrid(BuildContext context, bool isDarkMode) {
-    return SizedBox(
-      height: 200,
-      child: Obx(() {
-        final lugares = controller.lugaresDisponibles
-            .where((l) => l.codigoPiso == controller.pisoSeleccionado.value?.codigo)
-            .toList();
-
-        if (lugares.isEmpty) {
-          return Center(
-            child: Text(
-              "No hay lugares disponibles en este piso",
-              style: GoogleFonts.montserrat(
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-              ),
-            ),
-          );
-        }
-
-        return GridView.count(
-          crossAxisCount: 5,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          children: lugares.map((lugar) {
-            final seleccionado = lugar == controller.lugarSeleccionado.value;
-            final color = lugar.estado == "RESERVADO"
-                ? (isDarkMode ? Colors.red.shade900 : Colors.red.shade100)
-                : seleccionado
-                    ? (isDarkMode ? Colors.green.shade900 : Colors.green.shade100)
-                    : (isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100);
-
-            return GestureDetector(
-              onTap: lugar.estado == "DISPONIBLE"
-                  ? () => controller.lugarSeleccionado.value = lugar
-                  : null,
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: color,
-                  border: Border.all(
-                    color: seleccionado
-                        ? (isDarkMode ? Colors.green.shade400 : Colors.green)
-                        : (isDarkMode ? Colors.grey[800]! : Colors.grey[300]!),
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: seleccionado
-                      ? [
-                          BoxShadow(
-                            color: (isDarkMode ? Colors.green.shade400 : Colors.green)
-                                .withOpacity(0.3),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          )
-                        ]
-                      : null,
-                ),
-                child: Text(
-                  lugar.codigoLugar,
-                  style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.w600,
-                    color: lugar.estado == "RESERVADO"
-                        ? (isDarkMode ? Colors.red.shade300 : Colors.red)
-                        : seleccionado
-                            ? (isDarkMode ? Colors.green.shade300 : Colors.green)
-                            : (isDarkMode ? Colors.white : Colors.black87),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      }),
     );
   }
 }

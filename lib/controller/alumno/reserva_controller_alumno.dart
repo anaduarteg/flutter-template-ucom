@@ -10,15 +10,12 @@ class ReservaAlumnoController extends GetxController {
   final horarioInicio = Rxn<DateTime>();
   final horarioSalida = Rxn<DateTime>();
   final duracionSeleccionada = 0.obs;
-  final marcaSeleccionada = RxnString();
-  final matriculaController = TextEditingController();
   final autosCliente = <Auto>[].obs;
   final pisos = <Piso>[].obs;
   final lugaresDisponibles = <Lugar>[].obs;
   final reservasPorDia = <DateTime, List<Reserva>>{}.obs;
   final db = LocalDBService();
-  String codigoClienteActual =
-      'cliente_1'; // ← este puede venir de login o contexto
+  String codigoClienteActual = 'cliente_1';
 
   @override
   void onInit() {
@@ -29,40 +26,55 @@ class ReservaAlumnoController extends GetxController {
     cargarReservas();
   }
 
+  Future<void> cargarAutosDelCliente() async {
+    try {
+      final rawAutos = await db.getAll("autos.json");
+      autosCliente.value = rawAutos.map((json) => Auto.fromJson(json)).toList();
+    } catch (e) {
+      print("Error al cargar autos: $e");
+      autosCliente.value = [];
+    }
+  }
+
   Future<void> cargarPisosYLugares() async {
-    final rawPisos = await db.getAll("pisos.json");
-    final rawLugares = await db.getAll("lugares.json");
-    final rawReservas = await db.getAll("reservas.json");
+    try {
+      final rawPisos = await db.getAll("pisos.json");
+      final rawLugares = await db.getAll("lugares.json");
+      final rawReservas = await db.getAll("reservas.json");
 
-    final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
-    final lugaresReservados = reservas.map((r) => r.codigoReserva).toSet();
+      final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
+      final lugaresReservados = reservas.map((r) => r.codigoReserva).toSet();
 
-    final todosLugares = rawLugares.map((e) => Lugar.fromJson(e)).toList();
+      final todosLugares = rawLugares.map((e) => Lugar.fromJson(e)).toList();
 
-    // Unir pisos con sus lugares correspondientes
-    pisos.value = rawPisos.map((pJson) {
-      final codigoPiso = pJson['codigo'];
-      final lugaresDelPiso =
-          todosLugares.where((l) => l.codigoPiso == codigoPiso).toList();
+      // Cargar pisos
+      pisos.value = rawPisos.map((pJson) {
+        final codigoPiso = pJson['codigo'];
+        final lugaresDelPiso =
+            todosLugares.where((l) => l.codigoPiso == codigoPiso).toList();
 
-      return Piso(
-        codigo: codigoPiso,
-        descripcion: pJson['descripcion'],
-        lugares: lugaresDelPiso,
-      );
-    }).toList();
+        return Piso(
+          codigo: codigoPiso,
+          descripcion: pJson['descripcion'],
+          lugares: lugaresDelPiso,
+        );
+      }).toList();
 
-    // Inicializar lugares disponibles (solo los no reservados)
-    lugaresDisponibles.value = todosLugares.where((l) {
-      return !lugaresReservados.contains(l.codigoLugar);
-    }).toList();
+      // Cargar lugares disponibles
+      lugaresDisponibles.value = todosLugares.where((l) {
+        return !lugaresReservados.contains(l.codigoLugar);
+      }).toList();
+    } catch (e) {
+      print("Error al cargar pisos y lugares: $e");
+      pisos.value = [];
+      lugaresDisponibles.value = [];
+    }
   }
 
   Future<void> cargarReservas() async {
     final rawReservas = await db.getAll("reservas.json");
     final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
     
-    // Agrupar reservas por día
     for (var reserva in reservas) {
       final fecha = DateTime(
         reserva.horarioInicio.year,
@@ -85,9 +97,13 @@ class ReservaAlumnoController extends GetxController {
   void seleccionarPiso(Piso piso) {
     pisoSeleccionado.value = piso;
     lugarSeleccionado.value = null;
-
-    // filtrar lugares de este piso
     lugaresDisponibles.refresh();
+  }
+
+  void seleccionarLugar(Lugar lugar) {
+    if (lugar.estado == "DISPONIBLE") {
+      lugarSeleccionado.value = lugar;
+    }
   }
 
   Future<bool> confirmarReserva() async {
@@ -116,12 +132,10 @@ class ReservaAlumnoController extends GetxController {
     );
 
     try {
-      // Guardar la reserva
       final reservas = await db.getAll("reservas.json");
       reservas.add(nuevaReserva.toJson());
       await db.saveAll("reservas.json", reservas);
 
-      // Marcar el lugar como reservado
       final lugares = await db.getAll("lugares.json");
       final index = lugares.indexWhere(
         (l) => l['codigoLugar'] == lugarSeleccionado.value!.codigoLugar,
@@ -138,92 +152,12 @@ class ReservaAlumnoController extends GetxController {
     }
   }
 
-  void actualizarVehiculoSeleccionado(String? marca) {
-    marcaSeleccionada.value = marca;
-    if (marca != null && matriculaController.text.isNotEmpty) {
-      // Buscar si ya existe un auto con esta marca y matrícula
-      final autoExistente = autosCliente.firstWhereOrNull(
-        (auto) => auto.marca == marca && auto.chapa == matriculaController.text,
-      );
-
-      if (autoExistente != null) {
-        autoSeleccionado.value = autoExistente;
-      } else {
-        // Crear un nuevo auto
-        final nuevoAuto = Auto(
-          chapa: matriculaController.text,
-          marca: marca,
-          modelo: "No especificado",
-          clienteId: codigoClienteActual,
-          chasis: "No especificado",
-        );
-        autoSeleccionado.value = nuevoAuto;
-        autosCliente.add(nuevoAuto);
-        // Guardar el nuevo auto en la base de datos
-        guardarNuevoAuto(nuevoAuto);
-      }
-    }
-  }
-
-  void actualizarMatricula(String matricula) {
-    if (marcaSeleccionada.value != null) {
-      // Buscar si ya existe un auto con esta marca y matrícula
-      final autoExistente = autosCliente.firstWhereOrNull(
-        (auto) => auto.marca == marcaSeleccionada.value && auto.chapa == matricula,
-      );
-
-      if (autoExistente != null) {
-        autoSeleccionado.value = autoExistente;
-      } else {
-        // Crear un nuevo auto
-        final nuevoAuto = Auto(
-          chapa: matricula,
-          marca: marcaSeleccionada.value!,
-          modelo: "No especificado",
-          clienteId: codigoClienteActual,
-          chasis: "No especificado",
-        );
-        autoSeleccionado.value = nuevoAuto;
-        autosCliente.add(nuevoAuto);
-        // Guardar el nuevo auto en la base de datos
-        guardarNuevoAuto(nuevoAuto);
-      }
-    }
-  }
-
-  Future<void> guardarNuevoAuto(Auto auto) async {
-    try {
-      final autos = await db.getAll("autos.json");
-      autos.add(auto.toJson());
-      await db.saveAll("autos.json", autos);
-    } catch (e) {
-      print("Error al guardar nuevo auto: $e");
-    }
-  }
-
-  Future<void> cargarAutosDelCliente() async {
-    final rawAutos = await db.getAll("autos.json");
-    final autos = rawAutos.map((e) => Auto.fromJson(e)).toList();
-
-    autosCliente.value =
-        autos.where((a) => a.clienteId == codigoClienteActual).toList();
-  }
-
-  @override
-  void onClose() {
-    resetearCampos();
-    matriculaController.dispose();
-    super.onClose();
-  }
-
   void resetearCampos() {
     pisoSeleccionado.value = null;
     lugarSeleccionado.value = null;
     horarioInicio.value = null;
     horarioSalida.value = null;
     duracionSeleccionada.value = 0;
-    marcaSeleccionada.value = null;
-    matriculaController.clear();
     autoSeleccionado.value = null;
   }
 }

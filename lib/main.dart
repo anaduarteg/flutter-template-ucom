@@ -6,25 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'dart:io' show Platform;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
+  
+  // Solo aplicar estas configuraciones en plataformas móviles
+  if (Platform.isAndroid || Platform.isIOS) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        systemNavigationBarColor:
-            Colors.transparent //or set color with: Color(0xFF0000FF)
-        ),
-  );
+        systemNavigationBarColor: Colors.transparent,
+      ),
+    );
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]).then(
-    (_) => runApp(
-      const MyApp(),
-    ),
-  );
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -32,7 +34,6 @@ class MyApp extends StatefulWidget {
 
   static setCustomeTheme(BuildContext context, int index) async {
     final _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-
     state!.setCustomeTheme(index);
   }
 
@@ -55,14 +56,17 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.light,
-      systemNavigationBarColor: AppTheme.getTheme().primaryColor,
-      systemNavigationBarDividerColor: AppTheme.getTheme().disabledColor,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+    // Solo aplicar estas configuraciones en plataformas móviles
+    if (Platform.isAndroid || Platform.isIOS) {
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: AppTheme.getTheme().primaryColor,
+        systemNavigationBarDividerColor: AppTheme.getTheme().disabledColor,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ));
+    }
 
     return GetMaterialApp(
       title: 'FinPay',
