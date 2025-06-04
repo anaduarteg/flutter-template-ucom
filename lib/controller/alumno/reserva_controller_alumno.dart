@@ -38,32 +38,32 @@ class ReservaAlumnoController extends GetxController {
 
   Future<void> cargarPisosYLugares() async {
     try {
-      final rawPisos = await db.getAll("pisos.json");
-      final rawLugares = await db.getAll("lugares.json");
-      final rawReservas = await db.getAll("reservas.json");
+    final rawPisos = await db.getAll("pisos.json");
+    final rawLugares = await db.getAll("lugares.json");
+    final rawReservas = await db.getAll("reservas.json");
 
-      final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
-      final lugaresReservados = reservas.map((r) => r.codigoReserva).toSet();
+    final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
+    final lugaresReservados = reservas.map((r) => r.codigoReserva).toSet();
 
-      final todosLugares = rawLugares.map((e) => Lugar.fromJson(e)).toList();
+    final todosLugares = rawLugares.map((e) => Lugar.fromJson(e)).toList();
 
       // Cargar pisos
-      pisos.value = rawPisos.map((pJson) {
-        final codigoPiso = pJson['codigo'];
-        final lugaresDelPiso =
-            todosLugares.where((l) => l.codigoPiso == codigoPiso).toList();
+    pisos.value = rawPisos.map((pJson) {
+      final codigoPiso = pJson['codigo'];
+      final lugaresDelPiso =
+          todosLugares.where((l) => l.codigoPiso == codigoPiso).toList();
 
-        return Piso(
-          codigo: codigoPiso,
-          descripcion: pJson['descripcion'],
-          lugares: lugaresDelPiso,
-        );
-      }).toList();
+      return Piso(
+        codigo: codigoPiso,
+        descripcion: pJson['descripcion'],
+        lugares: lugaresDelPiso,
+      );
+    }).toList();
 
       // Cargar lugares disponibles
-      lugaresDisponibles.value = todosLugares.where((l) {
-        return !lugaresReservados.contains(l.codigoLugar);
-      }).toList();
+    lugaresDisponibles.value = todosLugares.where((l) {
+      return !lugaresReservados.contains(l.codigoLugar);
+    }).toList();
     } catch (e) {
       print("Error al cargar pisos y lugares: $e");
       pisos.value = [];

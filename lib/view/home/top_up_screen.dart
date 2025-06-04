@@ -54,53 +54,53 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
           ? HexColor('#15141f')
           : HexColor(AppTheme.primaryColorString!),
       body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
-            child: Row(
-              children: [
-                InkWell(
-                  focusColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ),
-                ),
-                const Expanded(child: SizedBox()),
-                Text(
-                  "Mis Reservas",
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
+                child: Row(
+                  children: [
+                    InkWell(
+                      focusColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.arrow_back,
                         color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
                       ),
-                ),
-                const Expanded(child: SizedBox()),
-                const Icon(
-                  Icons.arrow_back,
-                  color: Colors.transparent,
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(top: 30),
-              decoration: BoxDecoration(
-                color: AppTheme.isLightTheme == false
-                    ? const Color(0xff211F32)
-                    : Theme.of(context).appBarTheme.backgroundColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+                    ),
+                    const Expanded(child: SizedBox()),
+                    Text(
+                  "Mis Reservas",
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                    const Expanded(child: SizedBox()),
+                    const Icon(
+                      Icons.arrow_back,
+                      color: Colors.transparent,
+                    ),
+                  ],
                 ),
               ),
+          Expanded(
+                child: Container(
+              margin: const EdgeInsets.only(top: 30),
+                  decoration: BoxDecoration(
+                    color: AppTheme.isLightTheme == false
+                        ? const Color(0xff211F32)
+                        : Theme.of(context).appBarTheme.backgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
               child: Obx(() {
                 if (isLoading.value) {
                   return const Center(
@@ -115,20 +115,20 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
 
                 if (reservasPendientes.isEmpty) {
                   return Center(
-                    child: Column(
+                        child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                          children: [
                         Icon(
                           Icons.receipt_long,
                           size: 64,
                           color: Colors.grey.withOpacity(0.5),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
                           "No hay reservas pendientes de pago",
                           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                 color: Colors.grey.withOpacity(0.7),
-                                fontSize: 16,
+                                    fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
                         ),
@@ -165,18 +165,18 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.isLightTheme == false
-                              ? const Color(0xff323045)
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppTheme.isLightTheme == false
+                                      ? const Color(0xff323045)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
+                                  border: Border.all(
                             color: HexColor(AppTheme.primaryColorString!)
-                                .withOpacity(0.05),
-                            width: 2,
-                          ),
-                        ),
+                                            .withOpacity(0.05),
+                                    width: 2,
+                                  ),
+                                ),
                         child: Column(
                           children: [
                             Padding(
@@ -189,7 +189,7 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,
                                           vertical: 6,
-                                        ),
+                                      ),
                                         decoration: BoxDecoration(
                                           color: Colors.amber.withOpacity(0.1),
                                           borderRadius: BorderRadius.circular(20),
@@ -200,15 +200,15 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                         ),
                                         child: Text(
                                           reserva.estadoReserva,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .copyWith(
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
                                                 color: Colors.amber,
                                                 fontSize: 12,
-                                                fontWeight: FontWeight.w600,
+                                              fontWeight: FontWeight.w600,
                                               ),
-                                        ),
+                                            ),
                                       ),
                                       const Spacer(),
                                       Text(
@@ -243,7 +243,7 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                     Icons.access_time,
                                     "Horario",
                                     "${formatearHora(reserva.horarioInicio)} - ${formatearHora(reserva.horarioSalida)}",
-                                  ),
+                      ),
                                   const SizedBox(height: 12),
                                   _buildInfoRow(
                                     context,
@@ -251,25 +251,25 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                     "Vehículo",
                                     vehiculoStr,
                                   ),
-                                ],
-                              ),
-                            ),
+                    ],
+                  ),
+                ),
                             Container(
                               height: 1,
                               color: HexColor(AppTheme.primaryColorString!)
                                   .withOpacity(0.05),
-                            ),
-                            Padding(
+          ),
+          Padding(
                               padding: const EdgeInsets.all(16),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        Get.bottomSheet(
-                                          topupDialog(context),
-                                        );
-                                      },
+                Get.bottomSheet(
+                  topupDialog(context),
+                );
+              },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             HexColor(AppTheme.primaryColorString!),
@@ -279,7 +279,7 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                           vertical: 12,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12),
                                         ),
                                       ),
                                       child: Text(
@@ -291,16 +291,16 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: Colors.white,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
+                                ],
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
                     );
                   },
                 );
