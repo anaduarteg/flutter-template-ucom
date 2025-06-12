@@ -7,12 +7,13 @@ import 'package:finpay/widgets/custom_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:finpay/model/sitema_reservas.dart';
 
-Widget topupDialog(BuildContext context) {
+Widget topupDialog(BuildContext context, {required Reserva reserva}) {
   return Padding(
     padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
     child: Container(
-      height: 332,
+      height: Get.height * 0.5, // 50% de la altura de la pantalla
       width: Get.width,
       decoration: BoxDecoration(
         color: AppTheme.isLightTheme == false
@@ -39,7 +40,7 @@ Widget topupDialog(BuildContext context) {
                   ),
                 ),
                 Text(
-                  "Confirm",
+                  "Confirmar Pago",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -62,58 +63,42 @@ Widget topupDialog(BuildContext context) {
               ],
             ),
             const SizedBox(height: 20),
+            Container(
+              height: 80,
+              width: 80,
+              decoration: BoxDecoration(
+                color: HexColor(AppTheme.primaryColorString!).withOpacity(0.10),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: SvgPicture.asset(
+                  DefaultImages.topup,
+                  height: 30,
+                  width: 30,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Detalles del Pago",
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Method",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xffA2A0A8)),
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 18,
-                      width: 24,
-                      child: SvgPicture.asset(
-                        DefaultImages.mastercard,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "MasterCard",
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            Divider(
-              color: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .color!
-                  .withOpacity(0.08),
-            ),
-            const SizedBox(height: 13),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Top-up Amount",
+                  "Monto a Pagar",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                       color: const Color(0xffA2A0A8)),
                 ),
                 Text(
-                  "\$500.00",
+                  "₲${reserva.monto}",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -141,7 +126,7 @@ Widget topupDialog(BuildContext context) {
                       ),
                 ),
                 Text(
-                  "\$500.00",
+                  "₲${reserva.monto}",
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -150,17 +135,20 @@ Widget topupDialog(BuildContext context) {
               ],
             ),
             const SizedBox(height: 25),
-            CustomButton(
-              title: "Continue",
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TopUpSucessScreen(),
-                  ),
-                );
-              },
+            SizedBox(
+              width: Get.width * 0.7, // 70% del ancho de la pantalla
+              child: CustomButton(
+                title: "Confirmar",
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TopUpSucessScreen(),
+                    ),
+                  );
+                },
+              ),
             )
           ],
         ),

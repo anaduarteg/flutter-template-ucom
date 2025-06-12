@@ -15,9 +15,17 @@ class HomeController extends GetxController {
   RxBool isYear = false.obs;
   RxBool isAdd = false.obs;
   RxList<Pago> pagosPrevios = <Pago>[].obs;
+  RxList<Reserva> reservasPrevias = <Reserva>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    customInit();
+  }
 
   customInit() async {
-    cargarPagosPrevios();
+    await cargarPagosPrevios();
+    await cargarReservasPrevias();
     isWeek.value = true;
     isMonth.value = false;
     isYear.value = false;
@@ -60,7 +68,44 @@ class HomeController extends GetxController {
   Future<void> cargarPagosPrevios() async {
     final db = LocalDBService();
     final data = await db.getAll("pagos.json");
-
     pagosPrevios.value = data.map((json) => Pago.fromJson(json)).toList();
+  }
+
+  Future<void> cargarReservasPrevias() async {
+    try {
+      final db = LocalDBService();
+      final data = await db.getAll("reservas.json");
+      final reservas = data.map((json) => Reserva.fromJson(json)).toList();
+      
+      // Ordenar por fecha de inicio en orden descendente
+      reservas.sort((a, b) => b.horarioInicio.compareTo(a.horarioInicio));
+      
+      reservasPrevias.value = reservas;
+    } catch (e) {
+      print("Error al cargar reservas previas: $e");
+      reservasPrevias.value = [];
+    }
+  }
+
+  String obtenerEstadoReserva(Reserva reserva) {
+    return reserva.estadoReserva;
+  }
+
+  Color obtenerColorEstado(String estado) {
+    switch (estado.toUpperCase()) {
+      case 'PAGADO':
+        return Colors.green;
+      case 'PENDIENTE':
+        return Colors.orange;
+      case 'CANCELADA':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Método para actualizar las reservas desde otros controladores
+  Future<void> actualizarReservas() async {
+    await cargarReservasPrevias();
   }
 }

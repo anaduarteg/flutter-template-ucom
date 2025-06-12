@@ -38,12 +38,8 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     int light = 1;
     int dark = 2;
-    changeColor(int color) {
-      if (color == light) {
-        MyApp.setCustomeTheme(context, 6);
-      } else {
-        MyApp.setCustomeTheme(context, 7);
-      }
+    void _changeTheme(bool isDark) {
+      MyApp.setCustomTheme(context, isDark ? 7 : 6);
     }
 
     return Scaffold(
@@ -101,9 +97,9 @@ class _SettingScreenState extends State<SettingScreen> {
                       setState(() {
                         profileController.darkMode.value = v;
                         if (v == true) {
-                          changeColor(dark);
+                          _changeTheme(true);
                         } else {
-                          changeColor(light);
+                          _changeTheme(false);
                         }
                       });
                     },

@@ -39,6 +39,40 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  void _handleLogin() {
+    final phone = loginController.mobileController.value.text;
+    final password = loginController.pswdController.value.text;
+
+    if (phone.isEmpty || password.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Por favor complete todos los campos',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (phone.length < 10) {
+      Get.snackbar(
+        'Error',
+        'El número de teléfono debe tener 10 dígitos',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Aquí iría la lógica de autenticación real
+    Get.to(
+      const TabScreen(),
+      transition: Transition.rightToLeft,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,8 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   focusColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   hoverColor: Colors.transparent,
-                                  splashColor:
-                                      const Color.fromARGB(0, 78, 8, 8),
+                                  splashColor: Colors.transparent,
                                   onTap: () {
                                     loginController.isVisible.value =
                                         !loginController.isVisible.value;
@@ -154,9 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 hintText: "Clave",
-                                obscure: loginController.isVisible.value == true
-                                    ? false
-                                    : true,
+                                obscure: !loginController.isVisible.value,
                                 textEditingController:
                                     loginController.pswdController.value,
                                 capitalization: TextCapitalization.none,
@@ -174,14 +205,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               hoverColor: Colors.transparent,
                               splashColor: Colors.transparent,
                               onTap: () {
-                                print(loginController.mobileController.value
-                                    .toString());
-                                print(loginController.pswdController.value);
-                                /*  Get.to(
+                                Get.to(
                                   const PasswordRecoveryScreen(),
                                   transition: Transition.rightToLeft,
                                   duration: const Duration(milliseconds: 500),
-                                ); */
+                                );
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -207,20 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               highlightColor: Colors.transparent,
                               hoverColor: Colors.transparent,
                               splashColor: Colors.transparent,
-                              onTap: () {
-                                print(loginController
-                                    .mobileController.value.text);
-                                print(
-                                    loginController.pswdController.value.text);
-                                if (loginController
-                                    .pswdController.value.text.isNotEmpty) {
-                                  Get.to(
-                                    const TabScreen(),
-                                    transition: Transition.rightToLeft,
-                                    duration: const Duration(milliseconds: 500),
-                                  );
-                                }
-                              },
+                              onTap: _handleLogin,
                               child: customButton(
                                   HexColor(AppTheme.primaryColorString!),
                                   "Ingresar",
@@ -244,25 +259,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text("No tienes una cuenta ?",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16,
-                                                color:
-                                                    const Color(0xff9CA3AF))),
-                                    Text(" Registrarse",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16,
-                                              color: HexColor(
-                                                  AppTheme.primaryColorString!),
-                                            ))
+                                    Text(
+                                      "No tienes una cuenta ?",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            color: const Color(0xffA2A0A8),
+                                          ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "Registrate",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: HexColor(
+                                                AppTheme.primaryColorString!),
+                                          ),
+                                    ),
                                   ],
                                 ),
                               ),

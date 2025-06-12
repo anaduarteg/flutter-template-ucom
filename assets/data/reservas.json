@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "codigoReserva": "RES-001",
+    "horarioInicio": "2024-03-20T10:00:00",
+    "horarioSalida": "2024-03-20T12:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "ABC123"
+  },
+  {
+    "codigoReserva": "RES-002",
+    "horarioInicio": "2024-03-19T15:00:00",
+    "horarioSalida": "2024-03-19T17:00:00",
+    "monto": 20000,
+    "estadoReserva": "PENDIENTE",
+    "chapaAuto": "DEF456"
+  },
+  {
+    "codigoReserva": "RES-003",
+    "horarioInicio": "2024-03-18T09:00:00",
+    "horarioSalida": "2024-03-18T11:00:00",
+    "monto": 20000,
+    "estadoReserva": "CANCELADA",
+    "chapaAuto": "GHI789"
+  }
+]

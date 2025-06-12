@@ -10,6 +10,8 @@ import 'package:get/get.dart';
 import 'package:swipe/swipe.dart';
 import 'package:finpay/controller/alumno/reserva_controller_alumno.dart';
 import 'package:collection/collection.dart';
+import 'package:finpay/controller/home_controller.dart';
+import 'package:finpay/model/sitema_reservas.dart';
 
 class TopUpSCreen extends StatefulWidget {
   const TopUpSCreen({Key? key}) : super(key: key);
@@ -36,6 +38,67 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
     } catch (e) {
       print('Error al cargar las reservas: $e');
       isLoading.value = false;
+    }
+  }
+
+  Future<void> procesarPago(Reserva reserva) async {
+    try {
+      // Registrar el pago
+      final pagos = await controller.db.getAll("pagos.json");
+      final nuevoPago = {
+        'codigoPago': 'PAG-${DateTime.now().millisecondsSinceEpoch}',
+        'codigoReserva': reserva.codigoReserva,
+        'monto': reserva.monto,
+        'fechaPago': DateTime.now().toIso8601String(),
+        'estado': 'PAGADO',
+        'metodoPago': 'TARJETA',
+        'clienteId': controller.codigoClienteActual,
+      };
+      
+      pagos.add(nuevoPago);
+      await controller.db.saveAll("pagos.json", pagos);
+
+      // Actualizar el estado de la reserva
+      final reservas = await controller.db.getAll("reservas.json");
+      final index = reservas.indexWhere((r) => r['codigoReserva'] == reserva.codigoReserva);
+      if (index != -1) {
+        reservas[index]['estadoReserva'] = 'PAGADO';
+        await controller.db.saveAll("reservas.json", reservas);
+      }
+
+      // Liberar el lugar de estacionamiento
+      final lugares = await controller.db.getAll("lugares.json");
+      final lugarIndex = lugares.indexWhere(
+        (l) => l['codigoLugar'] == reserva.codigoReserva
+      );
+      
+      if (lugarIndex != -1) {
+        lugares[lugarIndex]['estado'] = "DISPONIBLE";
+        await controller.db.saveAll("lugares.json", lugares);
+      }
+
+      // Actualizar el HomeController
+      final homeController = Get.find<HomeController>();
+      await homeController.actualizarReservas();
+
+      // Mostrar mensaje de éxito
+      Get.snackbar(
+        'Éxito',
+        'Pago procesado correctamente y lugar liberado',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      // Recargar las reservas
+      await cargarReservas();
+    } catch (e) {
+      print('Error al procesar el pago: $e');
+      Get.snackbar(
+        'Error',
+        'No se pudo procesar el pago',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -108,27 +171,27 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                   );
                 }
 
-                final reservasPendientes = controller.reservasPorDia.values
-                    .expand((reservas) => reservas)
+                // Obtener todas las reservas pendientes sin duplicados
+                final reservasPendientes = controller.reservasPrevias
                     .where((reserva) => reserva.estadoReserva == 'PENDIENTE')
                     .toList();
 
                 if (reservasPendientes.isEmpty) {
                   return Center(
-                        child: Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                      children: [
                         Icon(
                           Icons.receipt_long,
                           size: 64,
                           color: Colors.grey.withOpacity(0.5),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
                           "No hay reservas pendientes de pago",
                           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                 color: Colors.grey.withOpacity(0.7),
-                                    fontSize: 16,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
                         ),
@@ -266,10 +329,13 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                   Expanded(
                                     child: ElevatedButton(
                                       onPressed: () {
-                Get.bottomSheet(
-                  topupDialog(context),
-                );
-              },
+                                        Get.bottomSheet(
+                                          topupDialog(context, reserva: reserva),
+                                        ).then((_) {
+                                          // Cuando se cierra el diálogo de pago
+                                          procesarPago(reserva);
+                                        });
+                                      },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             HexColor(AppTheme.primaryColorString!),

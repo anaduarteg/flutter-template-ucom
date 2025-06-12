@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:finpay/controller/reserva_controller.dart';
+import 'package:finpay/controller/tab_controller.dart';
+import 'package:finpay/controller/home_controller.dart';
 import 'package:finpay/model/sitema_reservas.dart';
 import 'package:finpay/utils/utiles.dart';
+import 'package:finpay/view/tab_screen.dart';
 
 class ReservaScreen extends StatelessWidget {
   final controller = Get.put(ReservaController());
@@ -207,61 +210,137 @@ class ReservaScreen extends StatelessWidget {
                   final horas = minutos / 60;
                   final monto = (horas * 10000).round();
 
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                    child: Text(
-                      "Monto estimado: ₲${UtilesApp.formatearGuaranies(monto)}",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                        child: Text(
+                          "Monto a pagar: ₲${UtilesApp.formatearGuaranies(monto)}",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Nota: El pago quedará pendiente y deberá ser realizado en el módulo de pagos",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   );
                 }),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Obx(() => controller.reservaConfirmada.value
+                        ? ElevatedButton(
+                            onPressed: () {
+                              Get.offAll(
+                                () => const TabScreen(),
+                                binding: BindingsBuilder(() {
+                                  Get.delete<TabScreenController>();
+                                  Get.delete<HomeController>();
+                                  Get.put(TabScreenController());
+                                  Get.put(HomeController());
+                                }),
+                                transition: Transition.fadeIn,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Ir a pagar'),
+                          )
+                        : ElevatedButton(
+                            onPressed: () async {
+                              await controller.cancelarReserva();
+                              Get.offAll(
+                                () => const TabScreen(),
+                                binding: BindingsBuilder(() {
+                                  Get.delete<TabScreenController>();
+                                  Get.delete<HomeController>();
+                                  Get.put(TabScreenController());
+                                  Get.put(HomeController());
+                                }),
+                                transition: Transition.fadeIn,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Cancelar'),
+                          )),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final confirmado = await controller.confirmarReserva();
+                          Get.offAll(
+                            () => const TabScreen(),
+                            binding: BindingsBuilder(() {
+                              Get.delete<TabScreenController>();
+                              Get.delete<HomeController>();
+                              Get.put(TabScreenController());
+                              Get.put(HomeController());
+                            }),
+                            transition: Transition.fadeIn,
+                            duration: const Duration(milliseconds: 300),
+                          );
+                        },
+                        child: const Text('Confirmar'),
                       ),
                     ),
-                    onPressed: () async {
-                      final confirmada = await controller.confirmarReserva();
-
-                      if (confirmada) {
-                        Get.snackbar(
-                          "Reserva",
-                          "Reserva realizada con éxito",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-
-                        // Esperá un poco para que el snackbar se muestre
-                        await Future.delayed(
-                            const Duration(milliseconds: 2000));
-
-                        Get.back();
-                      } else {
-                        Get.snackbar(
-                          "Error",
-                          "Verificá que todos los campos estén completos",
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: Colors.red.shade100,
-                          colorText: Colors.red.shade900,
-                        );
-                      }
-                    },
-                    child: const Text(
-                      "Confirmar Reserva",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
+                  ],
                 ),
               ],
             );
           }),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required bool isSelected,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : Colors.grey[200],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[300]!,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[600],
+            size: 24,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[800],
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
       ),
     );
   }

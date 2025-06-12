@@ -14,6 +14,7 @@ import 'package:finpay/view/home/widget/custom_card.dart';
 import 'package:finpay/view/home/widget/transaction_list.dart';
 import 'package:finpay/view/reservas/reservas_screen.dart';
 import 'package:finpay/view/alumno/reserva_screen_alumno.dart';
+import 'package:finpay/view/home/historial_completo_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -49,7 +50,7 @@ class HomeView extends StatelessWidget {
                           ),
                     ),
                     Text(
-                      "Buenos días",
+                      "Reserva tu lugar",
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontWeight: FontWeight.w700,
                             fontSize: 24,
@@ -248,8 +249,43 @@ class HomeView extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 10, right: 10, bottom: 50),
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Historial de Pagos",
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20,
+                            ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HistorialCompletoScreen(
+                                homeController: homeController,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Ver todo",
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                color: HexColor(AppTheme.primaryColorString!),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, bottom: 50),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.isLightTheme == false
@@ -265,60 +301,94 @@ class HomeView extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 16, right: 16, top: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Pagos previos",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                              ),
-                              Text(
-                                "Ver todo",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: HexColor(
-                                            AppTheme.primaryColorString!)),
-                              ),
-                            ],
-                          ),
-                        ),
                         const SizedBox(height: 20),
                         Obx(() {
+                          // Ordenar las reservas por fecha, las más recientes primero
+                          final reservasOrdenadas = homeController.reservasPrevias.toList()
+                            ..sort((a, b) => b.horarioInicio.compareTo(a.horarioInicio));
+
+                          // Tomar solo los últimos 5 movimientos
+                          final ultimosMovimientos = reservasOrdenadas.take(5).toList();
+
                           return Column(
-                            children: homeController.pagosPrevios.map((pago) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
+                            children: ultimosMovimientos.map((reserva) {
+                              final estado = homeController.obtenerEstadoReserva(reserva);
+                              final colorEstado = homeController.obtenerColorEstado(estado);
+                              
+                              return Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.isLightTheme == false
+                                      ? const Color(0xff323045)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: HexColor(AppTheme.primaryColorString!).withOpacity(0.05),
+                                    width: 1,
+                                  ),
+                                ),
                                 child: ListTile(
-                                  leading: const Icon(Icons.payments_outlined),
+                                  leading: Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      color: HexColor(AppTheme.primaryColorString!).withOpacity(0.10),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.local_parking,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
                                   title: Text(
-                                      "Reserva: ${pago.codigoReservaAsociada}"),
-                                  subtitle: Text(
-                                      "Fecha: ${UtilesApp.formatearFechaDdMMAaaa(pago.fechaPago)}"),
+                                    "Reserva #${reserva.codigoReserva}",
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        UtilesApp.formatearFechaDdMMAaaa(reserva.horarioInicio),
+                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: colorEstado.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          estado,
+                                          style: TextStyle(
+                                            color: colorEstado,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   trailing: Text(
-                                    "- ${UtilesApp.formatearGuaranies(pago.montoPagado)}",
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                    "₲${UtilesApp.formatearGuaranies(reserva.monto)}",
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                   ),
                                 ),
                               );
                             }).toList(),
                           );
                         }),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),

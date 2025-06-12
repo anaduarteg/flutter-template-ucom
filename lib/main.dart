@@ -5,18 +5,27 @@ import 'package:finpay/view/splash/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'dart:io' show Platform;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Solo aplicar estas configuraciones en plataformas móviles
+  // Configuración de la UI del sistema
+  _configureSystemUI();
+  
+  runApp(const MyApp());
+}
+
+void _configureSystemUI() {
   if (Platform.isAndroid || Platform.isIOS) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light,
         systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
 
@@ -25,16 +34,14 @@ void main() async {
       DeviceOrientation.portraitDown,
     ]);
   }
-
-  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static setCustomeTheme(BuildContext context, int index) async {
+  static void setCustomTheme(BuildContext context, int index) {
     final _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
-    state!.setCustomeTheme(index);
+    state?.setCustomTheme(index);
   }
 
   @override
@@ -42,32 +49,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  setCustomeTheme(int index) {
-    if (index == 6) {
-      setState(() {
-        AppTheme.isLightTheme = true;
-      });
-    } else if (index == 7) {
-      setState(() {
-        AppTheme.isLightTheme = false;
-      });
-    }
+  void setCustomTheme(int index) {
+    setState(() {
+      AppTheme.isLightTheme = index == 6;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Solo aplicar estas configuraciones en plataformas móviles
-    if (Platform.isAndroid || Platform.isIOS) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.getTheme().primaryColor,
-        systemNavigationBarDividerColor: AppTheme.getTheme().disabledColor,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ));
-    }
-
     return GetMaterialApp(
       title: 'FinPay',
       theme: AppTheme.getTheme(),

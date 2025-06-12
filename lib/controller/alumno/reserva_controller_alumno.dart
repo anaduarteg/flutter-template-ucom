@@ -2,6 +2,7 @@ import 'package:finpay/model/sitema_reservas.dart';
 import 'package:get/get.dart';
 import 'package:finpay/api/local.db.service.dart';
 import 'package:flutter/material.dart';
+import 'package:finpay/controller/home_controller.dart';
 
 class ReservaAlumnoController extends GetxController {
   final autoSeleccionado = Rxn<Auto>();
@@ -16,10 +17,14 @@ class ReservaAlumnoController extends GetxController {
   final reservasPorDia = <DateTime, List<Reserva>>{}.obs;
   final db = LocalDBService();
   String codigoClienteActual = 'cliente_1';
+  late final HomeController homeController;
+  final reservaConfirmada = false.obs;
+  final reservasPrevias = <Reserva>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    homeController = Get.find<HomeController>();
     resetearCampos();
     cargarAutosDelCliente();
     cargarPisosYLugares();
@@ -38,32 +43,32 @@ class ReservaAlumnoController extends GetxController {
 
   Future<void> cargarPisosYLugares() async {
     try {
-    final rawPisos = await db.getAll("pisos.json");
-    final rawLugares = await db.getAll("lugares.json");
-    final rawReservas = await db.getAll("reservas.json");
+      final rawPisos = await db.getAll("pisos.json");
+      final rawLugares = await db.getAll("lugares.json");
+      final rawReservas = await db.getAll("reservas.json");
 
-    final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
-    final lugaresReservados = reservas.map((r) => r.codigoReserva).toSet();
+      final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
+      final lugaresReservados = reservas.map((r) => r.codigoReserva).toSet();
 
-    final todosLugares = rawLugares.map((e) => Lugar.fromJson(e)).toList();
+      final todosLugares = rawLugares.map((e) => Lugar.fromJson(e)).toList();
 
       // Cargar pisos
-    pisos.value = rawPisos.map((pJson) {
-      final codigoPiso = pJson['codigo'];
-      final lugaresDelPiso =
-          todosLugares.where((l) => l.codigoPiso == codigoPiso).toList();
+      pisos.value = rawPisos.map((pJson) {
+        final codigoPiso = pJson['codigo'];
+        final lugaresDelPiso =
+            todosLugares.where((l) => l.codigoPiso == codigoPiso).toList();
 
-      return Piso(
-        codigo: codigoPiso,
-        descripcion: pJson['descripcion'],
-        lugares: lugaresDelPiso,
-      );
-    }).toList();
+        return Piso(
+          codigo: codigoPiso,
+          descripcion: pJson['descripcion'],
+          lugares: lugaresDelPiso,
+        );
+      }).toList();
 
       // Cargar lugares disponibles
-    lugaresDisponibles.value = todosLugares.where((l) {
-      return !lugaresReservados.contains(l.codigoLugar);
-    }).toList();
+      lugaresDisponibles.value = todosLugares.where((l) {
+        return !lugaresReservados.contains(l.codigoLugar);
+      }).toList();
     } catch (e) {
       print("Error al cargar pisos y lugares: $e");
       pisos.value = [];
@@ -72,20 +77,32 @@ class ReservaAlumnoController extends GetxController {
   }
 
   Future<void> cargarReservas() async {
-    final rawReservas = await db.getAll("reservas.json");
-    final reservas = rawReservas.map((e) => Reserva.fromJson(e)).toList();
-    
-    for (var reserva in reservas) {
-      final fecha = DateTime(
-        reserva.horarioInicio.year,
-        reserva.horarioInicio.month,
-        reserva.horarioInicio.day,
-      );
-      
-      if (!reservasPorDia.containsKey(fecha)) {
-        reservasPorDia[fecha] = [];
+    try {
+      final reservasJson = await db.getAll("reservas.json");
+      final reservas = reservasJson
+          .map((r) => Reserva.fromJson(r))
+          .where((r) => r.chapaAuto == autosCliente.firstOrNull?.chapa)
+          .toList();
+
+      // Actualizar reservasPrevias
+      reservasPrevias.value = reservas;
+
+      // Agrupar por día
+      final reservasPorDiaMap = <DateTime, List<Reserva>>{};
+      for (var reserva in reservas) {
+        final fecha = DateTime(
+          reserva.horarioInicio.year,
+          reserva.horarioInicio.month,
+          reserva.horarioInicio.day,
+        );
+        if (!reservasPorDiaMap.containsKey(fecha)) {
+          reservasPorDiaMap[fecha] = [];
+        }
+        reservasPorDiaMap[fecha]!.add(reserva);
       }
-      reservasPorDia[fecha]!.add(reserva);
+      reservasPorDia.value = reservasPorDiaMap;
+    } catch (e) {
+      print('Error al cargar reservas: $e');
     }
   }
 
@@ -107,8 +124,7 @@ class ReservaAlumnoController extends GetxController {
   }
 
   Future<bool> confirmarReserva() async {
-    if (autoSeleccionado.value == null ||
-        pisoSeleccionado.value == null ||
+    if (pisoSeleccionado.value == null ||
         lugarSeleccionado.value == null ||
         horarioInicio.value == null ||
         horarioSalida.value == null) {
@@ -122,6 +138,8 @@ class ReservaAlumnoController extends GetxController {
 
     final montoCalculado = (duracionEnHoras * 10000).roundToDouble();
 
+    if (autoSeleccionado.value == null) return false;
+
     final nuevaReserva = Reserva(
       codigoReserva: "RES-${DateTime.now().millisecondsSinceEpoch}",
       horarioInicio: horarioInicio.value!,
@@ -132,10 +150,12 @@ class ReservaAlumnoController extends GetxController {
     );
 
     try {
+      // Guardar la reserva
       final reservas = await db.getAll("reservas.json");
       reservas.add(nuevaReserva.toJson());
       await db.saveAll("reservas.json", reservas);
 
+      // Marcar el lugar como reservado
       final lugares = await db.getAll("lugares.json");
       final index = lugares.indexWhere(
         (l) => l['codigoLugar'] == lugarSeleccionado.value!.codigoLugar,
@@ -144,6 +164,12 @@ class ReservaAlumnoController extends GetxController {
         lugares[index]['estado'] = "RESERVADO";
         await db.saveAll("lugares.json", lugares);
       }
+      
+      // Marcar la reserva como confirmada
+      reservaConfirmada.value = true;
+
+      // Actualizar el HomeController
+      await homeController.actualizarReservas();
 
       return true;
     } catch (e) {
