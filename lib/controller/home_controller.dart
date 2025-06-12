@@ -88,19 +88,54 @@ class HomeController extends GetxController {
   }
 
   String obtenerEstadoReserva(Reserva reserva) {
-    return reserva.estadoReserva;
+    if (reserva.estadoReserva == 'PAGADO') {
+      return 'PAGADO';
+    } else if (reserva.estadoReserva == 'CANCELADA') {
+      return 'CANCELADA';
+    } else {
+      return 'PENDIENTE';
+    }
   }
 
   Color obtenerColorEstado(String estado) {
-    switch (estado.toUpperCase()) {
+    switch (estado) {
       case 'PAGADO':
         return Colors.green;
-      case 'PENDIENTE':
-        return Colors.orange;
       case 'CANCELADA':
         return Colors.red;
       default:
-        return Colors.grey;
+        return Colors.orange;
+    }
+  }
+
+  Future<String> obtenerNombreAuto(String chapa) async {
+    try {
+      final db = LocalDBService();
+      final autos = await db.getAll("autos.json");
+      final auto = autos.firstWhere(
+        (a) => a['chapa'] == chapa,
+        orElse: () => {'marca': 'Auto no encontrado'},
+      );
+      return auto['marca'] ?? 'Auto no encontrado';
+    } catch (e) {
+      print('Error al obtener marca del auto: $e');
+      return 'Auto no encontrado';
+    }
+  }
+
+  Future<String> obtenerPisoLugar(String codigoLugar) async {
+    try {
+      final db = LocalDBService();
+      final lugares = await db.getAll("lugares.json");
+      final lugar = lugares.firstWhere(
+        (l) => l['codigoLugar'] == codigoLugar,
+        orElse: () => {'piso': 'Piso no encontrado'},
+      );
+      final numeroPiso = lugar['piso'] ?? '0';
+      return "Piso $numeroPiso";
+    } catch (e) {
+      print('Error al obtener piso del lugar: $e');
+      return 'Piso no encontrado';
     }
   }
 

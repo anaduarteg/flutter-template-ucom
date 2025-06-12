@@ -44,77 +44,82 @@ class HistorialCompletoScreen extends StatelessWidget {
               final estado = homeController.obtenerEstadoReserva(reserva);
               final colorEstado = homeController.obtenerColorEstado(estado);
               
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: AppTheme.isLightTheme == false
-                      ? const Color(0xff211F32)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xff000000).withOpacity(0.10),
-                      blurRadius: 2,
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  leading: Container(
-                    height: 40,
-                    width: 40,
+              return FutureBuilder<String>(
+                future: homeController.obtenerNombreAuto(reserva.chapaAuto),
+                builder: (context, snapshot) {
+                  final nombreAuto = snapshot.data ?? 'Cargando...';
+                  
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: HexColor(AppTheme.primaryColorString!).withOpacity(0.10),
+                      color: AppTheme.isLightTheme == false
+                          ? const Color(0xff323045)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: HexColor(AppTheme.primaryColorString!).withOpacity(0.05),
+                        width: 1,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.local_parking,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  title: Text(
-                    "Reserva #${reserva.codigoReserva}",
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                    child: ListTile(
+                      leading: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: HexColor(AppTheme.primaryColorString!).withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 4),
-                      Text(
-                        UtilesApp.formatearFechaDdMMAaaa(reserva.horarioInicio),
-                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
+                        child: const Icon(
+                          Icons.local_parking,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      title: Text(
+                        "$nombreAuto ${reserva.chapaAuto}",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
                             ),
                       ),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: colorEstado.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          estado,
-                          style: TextStyle(
-                            color: colorEstado,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(
+                            "Fecha: ${UtilesApp.formatearFechaDdMMAaaa(reserva.horarioInicio)}",
+                            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
                           ),
-                        ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: colorEstado.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              estado,
+                              style: TextStyle(
+                                color: colorEstado,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  trailing: Text(
-                    "₲${UtilesApp.formatearGuaranies(reserva.monto)}",
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ),
+                      trailing: Text(
+                        "₲${reserva.monto.toStringAsFixed(0)}",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );

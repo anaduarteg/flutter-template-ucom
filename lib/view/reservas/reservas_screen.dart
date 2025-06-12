@@ -250,7 +250,7 @@ class ReservaScreen extends StatelessWidget {
                                 duration: const Duration(milliseconds: 300),
                               );
                             },
-                            style: ElevatedButton.styleFrom(
+                        style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
                             ),
@@ -258,7 +258,7 @@ class ReservaScreen extends StatelessWidget {
                           )
                         : ElevatedButton(
                             onPressed: () async {
-                              await controller.cancelarReserva();
+                            await controller.cancelarReserva();
                               Get.offAll(
                                 () => const TabScreen(),
                                 binding: BindingsBuilder(() {
@@ -293,7 +293,7 @@ class ReservaScreen extends StatelessWidget {
                             }),
                             transition: Transition.fadeIn,
                             duration: const Duration(milliseconds: 300),
-                          );
+                            );
                         },
                         child: const Text('Confirmar'),
                       ),
