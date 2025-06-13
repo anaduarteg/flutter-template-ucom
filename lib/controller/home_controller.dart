@@ -75,7 +75,20 @@ class HomeController extends GetxController {
     try {
       final db = LocalDBService();
       final data = await db.getAll("reservas.json");
-      final reservas = data.map((json) => Reserva.fromJson(json)).toList();
+      
+      // Obtener el auto del cliente actual
+      final autos = await db.getAll("autos.json");
+      final autoCliente = autos.firstWhere(
+        (a) => a['clienteId'] == 'cliente_1', // ID del cliente actual
+        orElse: () => {'chapa': ''},
+      );
+      final chapaAuto = autoCliente['chapa'] as String;
+      
+      // Filtrar reservas por la chapa del auto del cliente
+      final reservas = data
+          .map((json) => Reserva.fromJson(json))
+          .where((r) => r.chapaAuto == chapaAuto)
+          .toList();
       
       // Ordenar por fecha de inicio en orden descendente
       reservas.sort((a, b) => b.horarioInicio.compareTo(a.horarioInicio));
@@ -142,5 +155,18 @@ class HomeController extends GetxController {
   // Método para actualizar las reservas desde otros controladores
   Future<void> actualizarReservas() async {
     await cargarReservasPrevias();
+  }
+
+  // Método para obtener la cantidad de pagos del mes actual
+  int obtenerPagosDelMesActual() {
+    final ahora = DateTime.now();
+    final inicioMes = DateTime(ahora.year, ahora.month, 1);
+    final finMes = DateTime(ahora.year, ahora.month + 1, 0);
+
+    return reservasPrevias.where((reserva) {
+      return reserva.estadoReserva == 'PAGADO' &&
+          reserva.horarioInicio.isAfter(inicioMes) &&
+          reserva.horarioInicio.isBefore(finMes.add(const Duration(days: 1)));
+    }).length;
   }
 }

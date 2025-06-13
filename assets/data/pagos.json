@@ -1,32 +1,44 @@
 [
   {
-    "codigoPago": "PAG001",
-    "codigoReservaAsociada": "RES001",
-    "montoPagado": 20000.0,
-    "fechaPago": "2025-05-14T09:30:00"
+    "codigoPago": "PAG-001",
+    "codigoReservaAsociada": "RES-001",
+    "montoPagado": 20000,
+    "fechaPago": "2024-03-20T10:00:00"
   },
   {
-    "codigoPago": "PAG002",
-    "codigoReservaAsociada": "RES002",
-    "montoPagado": 25000.0,
-    "fechaPago": "2025-05-15T14:45:00"
+    "codigoPago": "PAG-004",
+    "codigoReservaAsociada": "RES-004",
+    "montoPagado": 20000,
+    "fechaPago": "2024-02-15T14:00:00"
   },
   {
-    "codigoPago": "PAG003",
-    "codigoReservaAsociada": "RES001",
-    "montoPagado": 20000.0,
-    "fechaPago": "2025-05-16T08:15:00"
+    "codigoPago": "PAG-005",
+    "codigoReservaAsociada": "RES-005",
+    "montoPagado": 20000,
+    "fechaPago": "2024-02-10T11:00:00"
   },
   {
-    "codigoPago": "PAG004",
-    "codigoReservaAsociada": "RES003",
-    "montoPagado": 18000.0,
-    "fechaPago": "2025-05-16T10:00:00"
+    "codigoPago": "PAG-006",
+    "codigoReservaAsociada": "RES-006",
+    "montoPagado": 20000,
+    "fechaPago": "2024-01-25T16:00:00"
   },
   {
-    "codigoPago": "PAG005",
-    "codigoReservaAsociada": "RES004",
-    "montoPagado": 22000.0,
-    "fechaPago": "2025-05-16T11:45:00"
+    "codigoPago": "PAG-008",
+    "codigoReservaAsociada": "RES-008",
+    "montoPagado": 20000,
+    "fechaPago": "2023-12-15T13:00:00"
+  },
+  {
+    "codigoPago": "PAG-009",
+    "codigoReservaAsociada": "RES-009",
+    "montoPagado": 20000,
+    "fechaPago": "2023-12-10T10:00:00"
+  },
+  {
+    "codigoPago": "PAG-010",
+    "codigoReservaAsociada": "RES-010",
+    "montoPagado": 20000,
+    "fechaPago": "2023-11-25T15:00:00"
   }
 ]

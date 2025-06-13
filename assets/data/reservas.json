@@ -22,5 +22,61 @@
     "monto": 20000,
     "estadoReserva": "CANCELADA",
     "chapaAuto": "GHI789"
+  },
+  {
+    "codigoReserva": "RES-004",
+    "horarioInicio": "2024-02-15T14:00:00",
+    "horarioSalida": "2024-02-15T16:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "JKL012"
+  },
+  {
+    "codigoReserva": "RES-005",
+    "horarioInicio": "2024-02-10T11:00:00",
+    "horarioSalida": "2024-02-10T13:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "MNO345"
+  },
+  {
+    "codigoReserva": "RES-006",
+    "horarioInicio": "2024-01-25T16:00:00",
+    "horarioSalida": "2024-01-25T18:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "PQR678"
+  },
+  {
+    "codigoReserva": "RES-007",
+    "horarioInicio": "2024-01-20T09:00:00",
+    "horarioSalida": "2024-01-20T11:00:00",
+    "monto": 20000,
+    "estadoReserva": "CANCELADA",
+    "chapaAuto": "STU901"
+  },
+  {
+    "codigoReserva": "RES-008",
+    "horarioInicio": "2023-12-15T13:00:00",
+    "horarioSalida": "2023-12-15T15:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "VWX234"
+  },
+  {
+    "codigoReserva": "RES-009",
+    "horarioInicio": "2023-12-10T10:00:00",
+    "horarioSalida": "2023-12-10T12:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "YZA567"
+  },
+  {
+    "codigoReserva": "RES-010",
+    "horarioInicio": "2023-11-25T15:00:00",
+    "horarioSalida": "2023-11-25T17:00:00",
+    "monto": 20000,
+    "estadoReserva": "PAGADO",
+    "chapaAuto": "BCD890"
   }
 ]

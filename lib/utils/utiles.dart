@@ -3,10 +3,15 @@ import 'package:intl/intl.dart';
 class UtilesApp {
   /// Retorna la fecha en formato dd-MM-yyyy
   static String formatearFechaDdMMAaaa(DateTime fecha) {
-    final dia = fecha.day.toString().padLeft(2, '0');
-    final mes = fecha.month.toString().padLeft(2, '0');
-    final anho = fecha.year.toString();
-    return '$dia-$mes-$anho';
+    return "${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year}";
+  }
+
+  static String formatearFechaMMMMYYYY(DateTime fecha) {
+    final meses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    return "${meses[fecha.month - 1]} ${fecha.year}";
   }
 
   static String formatearGuaranies(num monto) {

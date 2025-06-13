@@ -246,7 +246,7 @@ class ReservaAlumnoScreen extends StatelessWidget {
                   Expanded(
                     child: _buildActionButton(
                       icon: Icons.cancel_outlined,
-                      label: "Cancelar",
+                      label: "Salir",
                       onTap: () => Get.back(),
                       isDarkMode: isDarkMode,
                       isSecondary: true,

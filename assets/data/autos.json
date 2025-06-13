@@ -3,21 +3,70 @@
     "chapa": "ABC123",
     "marca": "Toyota",
     "modelo": "Corolla",
-    "chasis": "CH123456",
+    "chasis": "CHS001",
     "clienteId": "cliente_1"
   },
   {
     "chapa": "DEF456",
-    "marca": "Chevrolet",
-    "modelo": "Onix",
-    "chasis": "CH654321",
+    "marca": "Honda",
+    "modelo": "Civic",
+    "chasis": "CHS002",
     "clienteId": "cliente_1"
   },
   {
     "chapa": "GHI789",
     "marca": "Ford",
-    "modelo": "Fiesta",
-    "chasis": "CH987654",
+    "modelo": "Focus",
+    "chasis": "CHS003",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "JKL012",
+    "marca": "Chevrolet",
+    "modelo": "Cruze",
+    "chasis": "CHS004",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "MNO345",
+    "marca": "Volkswagen",
+    "modelo": "Golf",
+    "chasis": "CHS005",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "PQR678",
+    "marca": "Hyundai",
+    "modelo": "Elantra",
+    "chasis": "CHS006",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "STU901",
+    "marca": "Kia",
+    "modelo": "Forte",
+    "chasis": "CHS007",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "VWX234",
+    "marca": "Mazda",
+    "modelo": "3",
+    "chasis": "CHS008",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "YZA567",
+    "marca": "Nissan",
+    "modelo": "Sentra",
+    "chasis": "CHS009",
+    "clienteId": "cliente_1"
+  },
+  {
+    "chapa": "BCD890",
+    "marca": "Subaru",
+    "modelo": "Impreza",
+    "chasis": "CHS010",
     "clienteId": "cliente_1"
   }
 ]

@@ -253,12 +253,65 @@ class HomeView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Historial de Pagos",
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 20,
+                      Row(
+                        children: [
+                          Text(
+                            "Pagos este mes",
+                            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20,
+                                ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  HexColor(AppTheme.primaryColorString!),
+                                  HexColor(AppTheme.primaryColorString!).withOpacity(0.7),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: HexColor(AppTheme.primaryColorString!).withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.payments_outlined,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Obx(() => Text(
+                                  "${homeController.obtenerPagosDelMesActual()}",
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                        letterSpacing: 0.5,
+                                      ),
+                                )),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       InkWell(
                         onTap: () {
