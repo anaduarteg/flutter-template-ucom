@@ -10,149 +10,124 @@ import 'package:get/get.dart';
 import 'package:finpay/model/sitema_reservas.dart';
 
 Widget topupDialog(BuildContext context, {required Reserva reserva}) {
-  return Padding(
-    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 40),
-    child: Container(
-      height: Get.height * 0.5, // 50% de la altura de la pantalla
-      width: Get.width,
-      decoration: BoxDecoration(
-        color: AppTheme.isLightTheme == false
-            ? const Color(0xff211F32)
-            : Theme.of(context).appBarTheme.backgroundColor,
-        borderRadius: BorderRadius.circular(32),
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: AppTheme.isLightTheme == false
+          ? const Color(0xff211F32)
+          : Theme.of(context).appBarTheme.backgroundColor,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.close,
-                    color: HexColor(AppTheme.primaryColorString!),
-                    size: 20,
-                  ),
-                ),
-                Text(
-                  "Confirmar Pago",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-                InkWell(
-                  focusColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.transparent,
-                    size: 25,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                color: HexColor(AppTheme.primaryColorString!).withOpacity(0.10),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  DefaultImages.topup,
-                  height: 30,
-                  width: 30,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             Text(
-              "Detalles del Pago",
+              "Confirmar Pago",
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Monto a Pagar",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xffA2A0A8)),
-                ),
-                Text(
-                  "₲${reserva.monto}",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 17),
-            Divider(
-              color: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .color!
-                  .withOpacity(0.08),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Total",
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-                Text(
-                  "₲${reserva.monto}",
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-            SizedBox(
-              width: Get.width * 0.7, // 70% del ancho de la pantalla
-              child: CustomButton(
-                title: "Confirmar",
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TopUpSucessScreen(),
-                    ),
-                  );
-                },
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.close,
+                color: HexColor(AppTheme.primaryColorString!),
+                size: 20,
               ),
-            )
+            ),
           ],
         ),
-      ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.isLightTheme == false
+                ? const Color(0xff323045)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: HexColor(AppTheme.primaryColorString!).withOpacity(0.1),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Monto a Pagar",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 14,
+                          color: const Color(0xffA2A0A8),
+                        ),
+                  ),
+                  Text(
+                    "₲${reserva.monto}",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Divider(
+                color: Theme.of(context).textTheme.titleLarge!.color!.withOpacity(0.1),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Total",
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                  Text(
+                    "₲${reserva.monto}",
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: HexColor(AppTheme.primaryColorString!),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              "Confirmar Pago",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }

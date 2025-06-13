@@ -231,35 +231,34 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                         : "Lugar no encontrado";
 
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.only(bottom: 12),
                         child: Container(
                           decoration: BoxDecoration(
                             color: AppTheme.isLightTheme == false
                                 ? const Color(0xff323045)
                                 : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: HexColor(AppTheme.primaryColorString!)
-                                  .withOpacity(0.05),
-                              width: 2,
+                              color: HexColor(AppTheme.primaryColorString!).withOpacity(0.05),
+                              width: 1,
                             ),
                           ),
                           child: Column(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(12),
                                 child: Column(
                                   children: [
                                     Row(
                                       children: [
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
+                                            horizontal: 8,
+                                            vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
                                             color: Colors.amber.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(12),
                                             border: Border.all(
                                               color: Colors.amber,
                                               width: 1,
@@ -267,51 +266,45 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                                           ),
                                           child: Text(
                                             reserva.estadoReserva,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                  color: Colors.amber,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
+                                            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                              color: Colors.amber,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
                                         ),
                                         const Spacer(),
                                         Text(
                                           "₲${reserva.monto}",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge!
-                                              .copyWith(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w800,
-                                              ),
+                                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 16),
+                                    const SizedBox(height: 12),
                                     _buildInfoRow(
                                       context,
                                       Icons.local_parking,
                                       "Lugar",
                                       lugarStr,
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 8),
                                     _buildInfoRow(
                                       context,
                                       Icons.calendar_today,
                                       "Fecha",
                                       formatearFecha(reserva.horarioInicio),
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 8),
                                     _buildInfoRow(
                                       context,
                                       Icons.access_time,
                                       "Horario",
                                       "${formatearHora(reserva.horarioInicio)} - ${formatearHora(reserva.horarioSalida)}",
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: 8),
                                     _buildInfoRow(
                                       context,
                                       Icons.directions_car,
@@ -323,45 +316,77 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                               ),
                               Container(
                                 height: 1,
-                                color: HexColor(AppTheme.primaryColorString!)
-                                    .withOpacity(0.05),
+                                color: HexColor(AppTheme.primaryColorString!).withOpacity(0.05),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(12),
                                 child: Row(
                                   children: [
                                     Expanded(
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          final result = await Get.bottomSheet(
-                                            topupDialog(context, reserva: reserva),
-                                          );
-                                          if (result == true) {
-                                            await procesarPago(reserva);
+                                          try {
+                                            final result = await Get.bottomSheet(
+                                              topupDialog(context, reserva: reserva),
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                            );
+                                            
+                                            if (result == true) {
+                                              // Mostrar indicador de carga
+                                              Get.dialog(
+                                                const Center(
+                                                  child: CircularProgressIndicator(),
+                                                ),
+                                                barrierDismissible: false,
+                                              );
+                                              
+                                              try {
+                                                await procesarPago(reserva);
+                                                Get.back(); // Cerrar el indicador de carga
+                                                Get.back(); // Cerrar la pantalla de pagos
+                                              } catch (e) {
+                                                Get.back(); // Cerrar el indicador de carga
+                                                Get.snackbar(
+                                                  'Error',
+                                                  'No se pudo procesar el pago. Por favor, intente nuevamente.',
+                                                  backgroundColor: Colors.red,
+                                                  colorText: Colors.white,
+                                                  duration: const Duration(seconds: 3),
+                                                );
+                                              }
+                                            }
+                                          } catch (e) {
+                                            print('Error al mostrar el diálogo de pago: $e');
+                                            Get.snackbar(
+                                              'Error',
+                                              'No se pudo mostrar el diálogo de pago. Por favor, intente nuevamente.',
+                                              backgroundColor: Colors.red,
+                                              colorText: Colors.white,
+                                              duration: const Duration(seconds: 3),
+                                            );
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              HexColor(AppTheme.primaryColorString!),
+                                          backgroundColor: HexColor(AppTheme.primaryColorString!),
                                           foregroundColor: Colors.white,
                                           elevation: 0,
                                           padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
+                                            vertical: 8,
+                                            horizontal: 16,
                                           ),
+                                          minimumSize: const Size(120, 36),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(8),
                                           ),
                                         ),
                                         child: Text(
-                                          "Pagar Ahora",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .copyWith(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white,
-                                              ),
+                                          "Pagar",
+                                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -394,23 +419,27 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
         Icon(
           icon,
           color: const Color(0xffA2A0A8),
-          size: 20,
+          size: 16,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                fontSize: 14,
-                color: const Color(0xffA2A0A8),
-              ),
+            fontSize: 12,
+            color: const Color(0xffA2A0A8),
+          ),
         ),
         const Spacer(),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+        Expanded(
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
