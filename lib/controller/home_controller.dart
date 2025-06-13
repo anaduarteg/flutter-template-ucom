@@ -167,11 +167,12 @@ class HomeController extends GetxController {
       for (var reserva in reservas) {
         if (reserva.horarioInicio.month == mesActual && 
             reserva.horarioInicio.year == anioActual) {
-          switch (reserva.estadoReserva) {
+          switch (reserva.estadoReserva.toUpperCase()) {
             case "PENDIENTE":
               pendientes++;
               break;
             case "CANCELADO":
+            case "CANCELADA":
               cancelados++;
               break;
             case "PAGADO":
