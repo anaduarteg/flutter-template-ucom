@@ -219,7 +219,7 @@ class HomeView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Container(
-                              padding: const EdgeInsets.all(20),
+                              padding: const EdgeInsets.all(16),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,8 +230,8 @@ class HomeView extends StatelessWidget {
                                       Text(
                                         "Autos",
                                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w800,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
                                             ),
                                       ),
                                       IconButton(
@@ -241,15 +241,17 @@ class HomeView extends StatelessWidget {
                                           color: HexColor(AppTheme.primaryColorString!),
                                           size: 20,
                                         ),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 8),
                                   Obx(() => Text(
                                     homeController.mesActual.value,
-                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                           fontSize: 14,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.w500,
                                           color: const Color(0xffA2A0A8),
                                         ),
                                   )),
@@ -264,7 +266,7 @@ class HomeView extends StatelessWidget {
                                           Colors.amber,
                                         ),
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: _buildContador(
                                           context,
@@ -273,7 +275,7 @@ class HomeView extends StatelessWidget {
                                           Colors.red,
                                         ),
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: _buildContador(
                                           context,
@@ -290,10 +292,46 @@ class HomeView extends StatelessWidget {
                           ),
                         );
                       },
-                      child: circleCard(
-                        image: DefaultImages.withdraw,
-                        title: "Autos",
-                      ),
+                      child: Obx(() {
+                        final totalTransacciones = homeController.transaccionesPendientes.value +
+                            homeController.transaccionesCanceladas.value +
+                            homeController.transaccionesPagadas.value;
+                        
+                        return Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            color: HexColor(AppTheme.primaryColorString!).withOpacity(0.1),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: HexColor(AppTheme.primaryColorString!).withOpacity(0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                totalTransacciones.toString(),
+                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                      color: HexColor(AppTheme.primaryColorString!),
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Autos",
+                                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: HexColor(AppTheme.primaryColorString!),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                     ),
                     InkWell(
                       focusColor: Colors.transparent,
@@ -320,7 +358,7 @@ class HomeView extends StatelessWidget {
                     )
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.only(left: 20, right: 20),
                   child: Row(
@@ -329,7 +367,7 @@ class HomeView extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            "Transacciones este mes",
+                            "Transacciones",
                             style: Theme.of(context).textTheme.titleLarge!.copyWith(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 20,
@@ -405,72 +443,6 @@ class HomeView extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.isLightTheme == false
-                        ? const Color(0xff323045)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Autos",
-                            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                          ),
-                          Obx(() => Text(
-                            homeController.mesActual.value,
-                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xffA2A0A8),
-                                ),
-                          )),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildContador(
-                              context,
-                              "Pendientes",
-                              homeController.transaccionesPendientes.value.toString(),
-                              Colors.amber,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildContador(
-                              context,
-                              "Cancelados",
-                              homeController.transaccionesCanceladas.value.toString(),
-                              Colors.red,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildContador(
-                              context,
-                              "Pagados",
-                              homeController.transaccionesPagadas.value.toString(),
-                              Colors.green,
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -607,7 +579,7 @@ class HomeView extends StatelessWidget {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
@@ -617,12 +589,13 @@ class HomeView extends StatelessWidget {
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             valor,
             style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                   color: color,
                 ),
           ),
@@ -631,8 +604,10 @@ class HomeView extends StatelessWidget {
             label,
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   fontSize: 12,
+                  fontWeight: FontWeight.w500,
                   color: color,
                 ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
