@@ -5,5 +5,13 @@
     { "codigoPiso": "P1", "codigoLugar": "P1L003", "descripcionLugar": "Lugar 3" ,"estado" :"DISPONIBLE"},
   { "codigoPiso": "P1", "codigoLugar": "P1L004", "descripcionLugar": "Lugar 4" ,"estado" :"DISPONIBLE"},
 
-  { "codigoPiso": "P2", "codigoLugar": "P2L002", "descripcionLugar": "Lugar 2" ,"estado" :"DISPONIBLE"}
+  { "codigoPiso": "P2", "codigoLugar": "P2L002", "descripcionLugar": "Lugar 2" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L003", "descripcionLugar": "Lugar 3" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L004", "descripcionLugar": "Lugar 4" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L005", "descripcionLugar": "Lugar 5" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L006", "descripcionLugar": "Lugar 6" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L007", "descripcionLugar": "Lugar 7" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L008", "descripcionLugar": "Lugar 8" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L009", "descripcionLugar": "Lugar 9" ,"estado" :"DISPONIBLE"},
+  { "codigoPiso": "P2", "codigoLugar": "P2L010", "descripcionLugar": "Lugar 10" ,"estado" :"DISPONIBLE"}
 ]

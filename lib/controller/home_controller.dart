@@ -22,13 +22,14 @@ class HomeController extends GetxController {
   final transaccionesCanceladas = 0.obs;
   final transaccionesPagadas = 0.obs;
   final mesActual = ''.obs;
+  final autosCliente = <Auto>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     customInit();
     cargarReservasPrevias();
-    actualizarContadores();
+    actualizarReservas();
   }
 
   customInit() async {
@@ -137,9 +138,70 @@ class HomeController extends GetxController {
     }
   }
 
-  // Método para actualizar las reservas desde otros controladores
   Future<void> actualizarReservas() async {
-    await cargarReservasPrevias();
+    try {
+      final data = await db.getAll("reservas.json");
+      final reservas = data.map((json) => Reserva.fromJson(json)).toList();
+      
+      // Filtrar reservas por la chapa del primer auto del cliente
+      if (autosCliente.isNotEmpty) {
+        final chapaAuto = autosCliente[0].chapa;
+        reservasPrevias.value = reservas
+            .where((r) => r.chapaAuto == chapaAuto)
+            .toList();
+      } else {
+        reservasPrevias.value = reservas;
+      }
+
+      // Actualizar contadores de vehículos por estado
+      final ahora = DateTime.now();
+      final mesActual = ahora.month;
+      final anioActual = ahora.year;
+
+      // Reiniciar contadores
+      int pendientes = 0;
+      int cancelados = 0;
+      int pagados = 0;
+
+      // Contar reservas por estado para el mes actual
+      for (var reserva in reservas) {
+        if (reserva.horarioInicio.month == mesActual && 
+            reserva.horarioInicio.year == anioActual) {
+          switch (reserva.estadoReserva) {
+            case "PENDIENTE":
+              pendientes++;
+              break;
+            case "CANCELADO":
+              cancelados++;
+              break;
+            case "PAGADO":
+              pagados++;
+              break;
+          }
+        }
+      }
+
+      // Actualizar los contadores
+      transaccionesPendientes.value = pendientes;
+      transaccionesCanceladas.value = cancelados;
+      transaccionesPagadas.value = pagados;
+
+      // Actualizar el mes actual
+      final meses = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ];
+      this.mesActual.value = meses[mesActual - 1];
+
+      print('Contadores actualizados:');
+      print('Pendientes: $pendientes');
+      print('Cancelados: $cancelados');
+      print('Pagados: $pagados');
+      print('Total: ${pendientes + cancelados + pagados}');
+
+    } catch (e) {
+      print('Error al actualizar reservas: $e');
+    }
   }
 
   // Método para obtener la cantidad de pagos del mes actual

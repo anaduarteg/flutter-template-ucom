@@ -132,6 +132,7 @@ class ReservaController extends GetxController {
       // Actualizar el HomeController
       final homeController = Get.find<HomeController>();
       await homeController.actualizarReservas();
+      print('Reserva creada y contadores actualizados');
 
       return true;
     } catch (e) {

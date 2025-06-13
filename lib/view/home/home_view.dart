@@ -14,6 +14,7 @@ import 'package:finpay/view/home/historial_completo_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:finpay/model/sitema_reservas.dart';
 
 class HomeView extends StatelessWidget {
   final HomeController homeController;
@@ -608,6 +609,122 @@ class HomeView extends StatelessWidget {
                   color: color,
                 ),
             textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, double horas, double monto) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Row(
+            children: [
+              Text(
+                "${horas.round()} horas",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                "${UtilesApp.formatearGuaranies(monto)}GS",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getEstadoColor(String estado) {
+    switch (estado) {
+      case 'PENDIENTE':
+        return Colors.amber;
+      case 'CANCELADO':
+        return Colors.red;
+      case 'PAGADO':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Widget _buildTransactionItem(Reserva reserva, BuildContext context) {
+    final duracionEnHoras = reserva.horarioSalida.difference(reserva.horarioInicio).inMinutes / 60;
+    final monto = (duracionEnHoras * 10000).roundToDouble();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withOpacity(0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Lugar ${reserva.codigoLugar}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _getEstadoColor(reserva.estadoReserva).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  reserva.estadoReserva,
+                  style: TextStyle(
+                    color: _getEstadoColor(reserva.estadoReserva),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "${UtilesApp.formatearFechaDdMMAaaa(reserva.horarioInicio)} ${TimeOfDay.fromDateTime(reserva.horarioInicio).format(context)}",
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+              ),
+              Text(
+                "${UtilesApp.formatearGuaranies(monto)}GS",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ],
       ),

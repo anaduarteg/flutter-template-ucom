@@ -216,7 +216,7 @@ class ReservaScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                         child: Text(
-                          "Monto a pagar: ₲${UtilesApp.formatearGuaranies(monto)}",
+                          "Monto a pagar: ${UtilesApp.formatearGuaranies(monto)}GS",
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),

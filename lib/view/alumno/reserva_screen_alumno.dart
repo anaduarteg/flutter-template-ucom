@@ -69,56 +69,6 @@ class ReservaAlumnoScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: cardColor,
-          boxShadow: [
-            BoxShadow(
-              color: (isDarkMode ? Colors.black : Colors.grey).withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(
-                  icon: Icons.home_outlined,
-                  label: "Inicio",
-                  isSelected: false,
-                  onTap: () => Get.back(),
-                  isDarkMode: isDarkMode,
-                ),
-                _buildNavItem(
-                  icon: Icons.local_parking_outlined,
-                  label: "Reservar",
-                  isSelected: true,
-                  onTap: () {},
-                  isDarkMode: isDarkMode,
-                ),
-                _buildNavItem(
-                  icon: Icons.history_outlined,
-                  label: "Historial",
-                  isSelected: false,
-                  onTap: () {},
-                  isDarkMode: isDarkMode,
-                ),
-                _buildNavItem(
-                  icon: Icons.person_outline,
-                  label: "Perfil",
-                  isSelected: false,
-                  onTap: () {},
-                  isDarkMode: isDarkMode,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +152,7 @@ class ReservaAlumnoScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     _buildSummaryRow(
                       "Duración:",
-                      "${horas.toStringAsFixed(1)} horas",
+                      "${horas.round()} horas",
                       isDarkMode: isDarkMode,
                     ),
                     const SizedBox(height: 12),
@@ -224,7 +174,7 @@ class ReservaAlumnoScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "₲${UtilesApp.formatearGuaranies(monto)}",
+                            "${UtilesApp.formatearGuaranies(monto)}GS",
                             style: GoogleFonts.montserrat(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -1275,7 +1225,7 @@ class ReservaAlumnoScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "₲${UtilesApp.formatearGuaranies(reserva.monto)}",
+                            "${UtilesApp.formatearGuaranies(reserva.monto)}GS",
                             style: GoogleFonts.montserrat(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

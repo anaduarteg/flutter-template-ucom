@@ -17,7 +17,7 @@ class UtilesApp {
   static String formatearGuaranies(num monto) {
     final formatter = NumberFormat.currency(
       locale: 'es_PY',
-      symbol: '₲',
+      symbol: '',
       decimalDigits: 0,
     );
     return formatter.format(monto);
