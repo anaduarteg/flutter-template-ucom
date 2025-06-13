@@ -5,14 +5,10 @@ import 'package:finpay/config/images.dart';
 import 'package:finpay/config/textstyle.dart';
 import 'package:finpay/controller/alumno/reserva_controller_alumno.dart';
 import 'package:finpay/controller/home_controller.dart';
-import 'package:finpay/controller/reserva_controller.dart';
 import 'package:finpay/utils/utiles.dart';
 import 'package:finpay/view/home/top_up_screen.dart';
-import 'package:finpay/view/home/transfer_screen.dart';
 import 'package:finpay/view/home/widget/circle_card.dart';
 import 'package:finpay/view/home/widget/custom_card.dart';
-import 'package:finpay/view/home/widget/transaction_list.dart';
-import 'package:finpay/view/reservas/reservas_screen.dart';
 import 'package:finpay/view/alumno/reserva_screen_alumno.dart';
 import 'package:finpay/view/home/historial_completo_screen.dart';
 import 'package:flutter/material.dart';
@@ -266,7 +262,7 @@ class HomeView extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
+                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [

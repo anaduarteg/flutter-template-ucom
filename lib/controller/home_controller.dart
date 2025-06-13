@@ -7,6 +7,7 @@ import 'package:finpay/model/sitema_reservas.dart';
 import 'package:finpay/model/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:finpay/controller/alumno/reserva_controller_alumno.dart';
 
 class HomeController extends GetxController {
   List<TransactionModel> transactionList = List<TransactionModel>.empty().obs;
@@ -73,27 +74,8 @@ class HomeController extends GetxController {
 
   Future<void> cargarReservasPrevias() async {
     try {
-      final db = LocalDBService();
-      final data = await db.getAll("reservas.json");
-      
-      // Obtener el auto del cliente actual
-      final autos = await db.getAll("autos.json");
-      final autoCliente = autos.firstWhere(
-        (a) => a['clienteId'] == 'cliente_1', // ID del cliente actual
-        orElse: () => {'chapa': ''},
-      );
-      final chapaAuto = autoCliente['chapa'] as String;
-      
-      // Filtrar reservas por la chapa del auto del cliente
-      final reservas = data
-          .map((json) => Reserva.fromJson(json))
-          .where((r) => r.chapaAuto == chapaAuto)
-          .toList();
-      
-      // Ordenar por fecha de inicio en orden descendente
-      reservas.sort((a, b) => b.horarioInicio.compareTo(a.horarioInicio));
-      
-      reservasPrevias.value = reservas;
+      final reservaController = Get.find<ReservaAlumnoController>();
+      reservasPrevias.value = reservaController.reservasPrevias;
     } catch (e) {
       print("Error al cargar reservas previas: $e");
       reservasPrevias.value = [];
@@ -127,12 +109,12 @@ class HomeController extends GetxController {
       final autos = await db.getAll("autos.json");
       final auto = autos.firstWhere(
         (a) => a['chapa'] == chapa,
-        orElse: () => {'marca': 'Auto no encontrado'},
+        orElse: () => {'marca': 'Desconocido', 'modelo': 'Desconocido'},
       );
-      return auto['marca'] ?? 'Auto no encontrado';
+      return "${auto['marca']} ${auto['modelo']}";
     } catch (e) {
-      print('Error al obtener marca del auto: $e');
-      return 'Auto no encontrado';
+      print("Error al obtener nombre del auto: $e");
+      return "Auto no encontrado";
     }
   }
 
@@ -168,5 +150,15 @@ class HomeController extends GetxController {
           reserva.horarioInicio.isAfter(inicioMes) &&
           reserva.horarioInicio.isBefore(finMes.add(const Duration(days: 1)));
     }).length;
+  }
+
+  // Método para obtener reservas pendientes
+  List<Reserva> obtenerReservasPendientes() {
+    return reservasPrevias.where((reserva) => reserva.estadoReserva == 'PENDIENTE').toList();
+  }
+
+  // Método para obtener reservas pagadas
+  List<Reserva> obtenerReservasPagadas() {
+    return reservasPrevias.where((reserva) => reserva.estadoReserva == 'PAGADO').toList();
   }
 }

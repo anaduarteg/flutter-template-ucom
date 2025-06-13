@@ -87,6 +87,7 @@ class ReservaController extends GetxController {
       monto: montoCalculado,
       estadoReserva: "PENDIENTE",
       chapaAuto: autoSeleccionado.value!.chapa,
+      codigoLugar: lugarSeleccionado.value!.codigoLugar,
     );
 
     try {
@@ -144,8 +145,8 @@ class ReservaController extends GetxController {
       final pagos = await db.getAll("pagos.json");
       final nuevoPago = {
         'codigoPago': 'PAG-${DateTime.now().millisecondsSinceEpoch}',
-        'codigoReserva': reserva.codigoReserva,
-        'monto': reserva.monto,
+        'codigoReservaAsociada': reserva.codigoReserva,
+        'montoPagado': reserva.monto,
         'fechaPago': DateTime.now().toIso8601String(),
         'estado': 'PENDIENTE',
         'metodoPago': 'PENDIENTE',
@@ -207,7 +208,7 @@ class ReservaController extends GetxController {
     try {
       final pagos = await db.getAll("pagos.json");
       final pagosFiltrados = pagos.where((p) => 
-        p['codigoReserva'] == codigoReserva && 
+        p['codigoReservaAsociada'] == codigoReserva && 
         p['estado'] == 'PENDIENTE'
       ).toList();
 

@@ -5,7 +5,8 @@
     "horarioSalida": "2024-03-20T12:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "ABC123"
+    "chapaAuto": "ABC123",
+    "codigoLugar": "LUG-001"
   },
   {
     "codigoReserva": "RES-002",
@@ -13,7 +14,8 @@
     "horarioSalida": "2024-03-19T17:00:00",
     "monto": 20000,
     "estadoReserva": "PENDIENTE",
-    "chapaAuto": "DEF456"
+    "chapaAuto": "DEF456",
+    "codigoLugar": "LUG-002"
   },
   {
     "codigoReserva": "RES-003",
@@ -21,7 +23,8 @@
     "horarioSalida": "2024-03-18T11:00:00",
     "monto": 20000,
     "estadoReserva": "CANCELADA",
-    "chapaAuto": "GHI789"
+    "chapaAuto": "GHI789",
+    "codigoLugar": "LUG-003"
   },
   {
     "codigoReserva": "RES-004",
@@ -29,7 +32,8 @@
     "horarioSalida": "2024-02-15T16:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "JKL012"
+    "chapaAuto": "JKL012",
+    "codigoLugar": "LUG-004"
   },
   {
     "codigoReserva": "RES-005",
@@ -37,7 +41,8 @@
     "horarioSalida": "2024-02-10T13:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "MNO345"
+    "chapaAuto": "MNO345",
+    "codigoLugar": "LUG-005"
   },
   {
     "codigoReserva": "RES-006",
@@ -45,7 +50,8 @@
     "horarioSalida": "2024-01-25T18:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "PQR678"
+    "chapaAuto": "PQR678",
+    "codigoLugar": "LUG-006"
   },
   {
     "codigoReserva": "RES-007",
@@ -53,7 +59,8 @@
     "horarioSalida": "2024-01-20T11:00:00",
     "monto": 20000,
     "estadoReserva": "CANCELADA",
-    "chapaAuto": "STU901"
+    "chapaAuto": "STU901",
+    "codigoLugar": "LUG-007"
   },
   {
     "codigoReserva": "RES-008",
@@ -61,7 +68,8 @@
     "horarioSalida": "2023-12-15T15:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "VWX234"
+    "chapaAuto": "VWX234",
+    "codigoLugar": "LUG-008"
   },
   {
     "codigoReserva": "RES-009",
@@ -69,7 +77,8 @@
     "horarioSalida": "2023-12-10T12:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "YZA567"
+    "chapaAuto": "YZA567",
+    "codigoLugar": "LUG-009"
   },
   {
     "codigoReserva": "RES-010",
@@ -77,6 +86,7 @@
     "horarioSalida": "2023-11-25T17:00:00",
     "monto": 20000,
     "estadoReserva": "PAGADO",
-    "chapaAuto": "BCD890"
+    "chapaAuto": "BCD890",
+    "codigoLugar": "LUG-010"
   }
 ]

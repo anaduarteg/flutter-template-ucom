@@ -92,7 +92,7 @@ class ReservaScreen extends StatelessWidget {
                             lugar.codigoLugar,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: lugar.estado == "reservado"
+                              color: lugar.estado == "RESERVADO"
                                   ? Colors.white
                                   : Colors.black87,
                             ),
@@ -236,67 +236,83 @@ class ReservaScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Obx(() => controller.reservaConfirmada.value
-                        ? ElevatedButton(
-                            onPressed: () {
-                              Get.offAll(
-                                () => const TabScreen(),
-                                binding: BindingsBuilder(() {
-                                  Get.delete<TabScreenController>();
-                                  Get.delete<HomeController>();
-                                  Get.put(TabScreenController());
-                                  Get.put(HomeController());
-                                }),
-                                transition: Transition.fadeIn,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            },
-                        style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Ir a pagar'),
-                          )
-                        : ElevatedButton(
-                            onPressed: () async {
-                            await controller.cancelarReserva();
-                              Get.offAll(
-                                () => const TabScreen(),
-                                binding: BindingsBuilder(() {
-                                  Get.delete<TabScreenController>();
-                                  Get.delete<HomeController>();
-                                  Get.put(TabScreenController());
-                                  Get.put(HomeController());
-                                }),
-                                transition: Transition.fadeIn,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Cancelar'),
-                          )),
+                          ? ElevatedButton(
+                              onPressed: () {
+                                Get.offAll(
+                                  () => const TabScreen(),
+                                  binding: BindingsBuilder(() {
+                                    Get.delete<TabScreenController>();
+                                    Get.delete<HomeController>();
+                                    Get.put(TabScreenController());
+                                    Get.put(HomeController());
+                                  }),
+                                  transition: Transition.fadeIn,
+                                  duration: const Duration(milliseconds: 300),
+                                );
+                              },
+                              child: const Text("Ir al inicio"),
+                            )
+                          : ElevatedButton(
+                              onPressed: () async {
+                                if (controller.autoSeleccionado.value == null) {
+                                  Get.snackbar(
+                                    "Error",
+                                    "Por favor seleccione un auto",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                  return;
+                                }
+                                if (controller.pisoSeleccionado.value == null) {
+                                  Get.snackbar(
+                                    "Error",
+                                    "Por favor seleccione un piso",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                  return;
+                                }
+                                if (controller.lugarSeleccionado.value == null) {
+                                  Get.snackbar(
+                                    "Error",
+                                    "Por favor seleccione un lugar",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                  return;
+                                }
+                                if (controller.horarioInicio.value == null ||
+                                    controller.horarioSalida.value == null) {
+                                  Get.snackbar(
+                                    "Error",
+                                    "Por favor seleccione los horarios",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                  );
+                                  return;
+                                }
+                                await _procesarReserva(context);
+                              },
+                              child: const Text("Confirmar reserva"),
+                            )),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final confirmado = await controller.confirmarReserva();
-                          Get.offAll(
-                            () => const TabScreen(),
-                            binding: BindingsBuilder(() {
-                              Get.delete<TabScreenController>();
-                              Get.delete<HomeController>();
-                              Get.put(TabScreenController());
-                              Get.put(HomeController());
-                            }),
-                            transition: Transition.fadeIn,
-                            duration: const Duration(milliseconds: 300),
-                            );
-                        },
-                        child: const Text('Confirmar'),
-                      ),
+                      child: Obx(() => controller.reservaConfirmada.value
+                          ? ElevatedButton(
+                              onPressed: () async {
+                                await controller.cancelarReserva();
+                                Get.offAll(
+                                  () => const TabScreen(),
+                                  binding: BindingsBuilder(() {
+                                    Get.delete<TabScreenController>();
+                                    Get.delete<HomeController>();
+                                    Get.put(TabScreenController());
+                                    Get.put(HomeController());
+                                  }),
+                                  transition: Transition.fadeIn,
+                                  duration: const Duration(milliseconds: 300),
+                                );
+                              },
+                              child: const Text("Cancelar"),
+                            )
+                          : const SizedBox()),
                     ),
                   ],
                 ),
@@ -308,40 +324,17 @@ class ReservaScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentMethodCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required bool isSelected,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[300]!,
-          width: 2,
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[600],
-            size: 24,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey[800],
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<void> _procesarReserva(BuildContext context) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await controller.confirmarReserva();
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(content: Text('Reserva procesada correctamente')),
+      );
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 }

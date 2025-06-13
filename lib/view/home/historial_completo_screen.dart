@@ -320,20 +320,20 @@ class _HistorialCompletoScreenState extends State<HistorialCompletoScreen> {
                         bottom: 4,
                       ),
                       itemCount: reservasPorMes[mesSeleccionado]!.length,
-                      itemBuilder: (context, index) {
+            itemBuilder: (context, index) {
                         final reserva = reservasPorMes[mesSeleccionado]![index];
                         final estado = widget.homeController.obtenerEstadoReserva(reserva);
                         final colorEstado = widget.homeController.obtenerColorEstado(estado);
-
-                        return FutureBuilder<String>(
+              
+              return FutureBuilder<String>(
                           future: widget.homeController.obtenerNombreAuto(reserva.chapaAuto),
-                          builder: (context, snapshot) {
-                            final nombreAuto = snapshot.data ?? 'Cargando...';
-                            
-                            return Container(
+                builder: (context, snapshot) {
+                  final nombreAuto = snapshot.data ?? 'Cargando...';
+                  
+                  return Container(
                               margin: const EdgeInsets.fromLTRB(6, 0, 6, 3),
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                              decoration: BoxDecoration(
+                    decoration: BoxDecoration(
                                 color: AppTheme.isLightTheme ? Colors.grey[50] : const Color(0xff323045),
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -341,12 +341,12 @@ class _HistorialCompletoScreenState extends State<HistorialCompletoScreen> {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
+                        decoration: BoxDecoration(
                                       color: Theme.of(context).primaryColor.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(4),
-                                    ),
+                        ),
                                     child: Icon(
-                                      Icons.local_parking,
+                          Icons.local_parking,
                                       color: Theme.of(context).primaryColor,
                                       size: 12,
                                     ),
@@ -357,8 +357,8 @@ class _HistorialCompletoScreenState extends State<HistorialCompletoScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "$nombreAuto ${reserva.chapaAuto}",
-                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        "$nombreAuto ${reserva.chapaAuto}",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
                                               ),
@@ -375,34 +375,34 @@ class _HistorialCompletoScreenState extends State<HistorialCompletoScreen> {
                                   ),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
+                        children: [
+                          Text(
                                         "₲${reserva.monto.toStringAsFixed(0)}",
                                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 11,
                                             ),
                                       ),
-                                      Container(
+                          Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 2,
                                           vertical: 0,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: colorEstado.withOpacity(0.1),
+                            decoration: BoxDecoration(
+                              color: colorEstado.withOpacity(0.1),
                                           borderRadius: BorderRadius.circular(2),
-                                        ),
-                                        child: Text(
-                                          estado,
-                                          style: TextStyle(
-                                            color: colorEstado,
+                            ),
+                            child: Text(
+                              estado,
+                              style: TextStyle(
+                                color: colorEstado,
                                             fontSize: 7,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                                 ],
                               ),
                             );

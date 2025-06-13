@@ -1,13 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:finpay/config/images.dart';
 import 'package:finpay/config/textstyle.dart' hide HexColor;
 import 'package:finpay/view/home/topup_dialog.dart';
-import 'package:finpay/view/home/widget/amount_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:swipe/swipe.dart';
 import 'package:finpay/controller/alumno/reserva_controller_alumno.dart';
 import 'package:collection/collection.dart';
 import 'package:finpay/controller/home_controller.dart';
@@ -28,7 +24,10 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
   @override
   void initState() {
     super.initState();
-    controller = Get.put(ReservaAlumnoController());
+    if (!Get.isRegistered<ReservaAlumnoController>()) {
+      Get.put(ReservaAlumnoController());
+    }
+    controller = Get.find<ReservaAlumnoController>();
     cargarReservas();
   }
 
@@ -71,7 +70,7 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
       // Liberar el lugar de estacionamiento
       final lugares = await controller.db.getAll("lugares.json");
       final lugarIndex = lugares.indexWhere(
-        (l) => l['codigoLugar'] == reserva.codigoReserva
+        (l) => l['codigoLugar'] == reserva.codigoLugar
       );
       
       if (lugarIndex != -1) {
@@ -81,7 +80,7 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
 
       // Actualizar el HomeController
       final homeController = Get.find<HomeController>();
-      await homeController.actualizarReservas();
+      await homeController.cargarReservasPrevias();
 
       // Mostrar mensaje de éxito
       Get.snackbar(
@@ -213,11 +212,11 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
 
                       // Buscar el lugar correspondiente
                       final lugar = controller.lugaresDisponibles.firstWhereOrNull(
-                        (l) => l.codigoLugar == reserva.codigoReserva,
+                        (l) => l.codigoLugar == reserva.codigoLugar,
                       );
                       // Buscar el lugar en todos los pisos si no está en disponibles
                       final lugarCompleto = lugar ?? controller.pisos.expand((p) => p.lugares).firstWhereOrNull(
-                        (l) => l.codigoLugar == reserva.codigoReserva,
+                        (l) => l.codigoLugar == reserva.codigoLugar,
                       );
 
                       // Buscar el auto correspondiente
@@ -229,7 +228,7 @@ class _TopUpSCreenState extends State<TopUpSCreen> {
                         : reserva.chapaAuto;
                       final lugarStr = lugarCompleto != null
                         ? "${lugarCompleto.codigoLugar} - ${lugarCompleto.descripcionLugar}"
-                        : reserva.codigoReserva;
+                        : "Lugar no encontrado";
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16),

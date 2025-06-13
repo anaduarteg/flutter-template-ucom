@@ -2,7 +2,6 @@
 
 import 'package:finpay/config/images.dart';
 import 'package:finpay/config/textstyle.dart';
-import 'package:finpay/view/home/transfer_sucess_screen.dart';
 import 'package:finpay/widgets/custom_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -206,12 +205,6 @@ Widget transferDialog(BuildContext context) {
               title: "Continuar",
               onTap: () {
                 Navigator.pop(context);
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TransferSucessScreen(),
-                  ),
-                );
               },
             )
           ],

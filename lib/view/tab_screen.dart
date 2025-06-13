@@ -11,6 +11,7 @@ import 'package:finpay/view/statistics/statistics_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:finpay/controller/alumno/reserva_controller_alumno.dart';
 
 class TabScreen extends StatefulWidget {
   const TabScreen({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class _TabScreenState extends State<TabScreen> {
   void initState() {
     tabController.customInit();
     homeController.customInit();
+    Get.put(ReservaAlumnoController());
     super.initState();
   }
 

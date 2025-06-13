@@ -38,8 +38,9 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     int light = 1;
     int dark = 2;
-    void _changeTheme(bool isDark) {
-      MyApp.setCustomTheme(context, isDark ? 7 : 6);
+    void _onThemeChanged(bool value) {
+      final controller = Get.find<ProfileController>();
+      controller.darkMode.value = value;
     }
 
     return Scaffold(
@@ -95,12 +96,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     activeColor: HexColor(AppTheme.primaryColorString!),
                     onChanged: (v) {
                       setState(() {
-                        profileController.darkMode.value = v;
-                        if (v == true) {
-                          _changeTheme(true);
-                        } else {
-                          _changeTheme(false);
-                        }
+                        _onThemeChanged(v);
                       });
                     },
                   ),

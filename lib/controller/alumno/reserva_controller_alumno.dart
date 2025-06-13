@@ -78,18 +78,25 @@ class ReservaAlumnoController extends GetxController {
 
   Future<void> cargarReservas() async {
     try {
-      final reservasJson = await db.getAll("reservas.json");
-      final reservas = reservasJson
-          .map((r) => Reserva.fromJson(r))
-          .where((r) => r.chapaAuto == autosCliente.firstOrNull?.chapa)
+      if (autosCliente.isEmpty) {
+        await cargarAutosDelCliente();
+      }
+
+      // Cargar todas las reservas del cliente
+      final data = await db.getAll("reservas.json");
+      final reservas = data
+          .map((json) => Reserva.fromJson(json))
+          .where((r) => autosCliente.any((auto) => auto.chapa == r.chapaAuto))
           .toList();
 
-      // Actualizar reservasPrevias
+      // Ordenar por fecha de inicio en orden descendente
+      reservas.sort((a, b) => b.horarioInicio.compareTo(a.horarioInicio));
+      
       reservasPrevias.value = reservas;
 
       // Agrupar por día
       final reservasPorDiaMap = <DateTime, List<Reserva>>{};
-      for (var reserva in reservas) {
+      for (var reserva in reservasPrevias) {
         final fecha = DateTime(
           reserva.horarioInicio.year,
           reserva.horarioInicio.month,
@@ -101,8 +108,13 @@ class ReservaAlumnoController extends GetxController {
         reservasPorDiaMap[fecha]!.add(reserva);
       }
       reservasPorDia.value = reservasPorDiaMap;
+
+      // Actualizar el HomeController
+      homeController.reservasPrevias.value = reservas;
     } catch (e) {
       print('Error al cargar reservas: $e');
+      reservasPrevias.value = [];
+      reservasPorDia.value = {};
     }
   }
 
@@ -147,6 +159,7 @@ class ReservaAlumnoController extends GetxController {
       monto: montoCalculado,
       estadoReserva: "PENDIENTE",
       chapaAuto: autoSeleccionado.value!.chapa,
+      codigoLugar: lugarSeleccionado.value!.codigoLugar,
     );
 
     try {
