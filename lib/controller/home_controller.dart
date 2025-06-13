@@ -16,17 +16,23 @@ class HomeController extends GetxController {
   RxBool isYear = false.obs;
   RxBool isAdd = false.obs;
   RxList<Pago> pagosPrevios = <Pago>[].obs;
-  RxList<Reserva> reservasPrevias = <Reserva>[].obs;
+  final reservasPrevias = <Reserva>[].obs;
+  final db = LocalDBService();
+  final transaccionesPendientes = 0.obs;
+  final transaccionesCanceladas = 0.obs;
+  final transaccionesPagadas = 0.obs;
+  final mesActual = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
     customInit();
+    cargarReservasPrevias();
+    actualizarContadores();
   }
 
   customInit() async {
     await cargarPagosPrevios();
-    await cargarReservasPrevias();
     isWeek.value = true;
     isMonth.value = false;
     isYear.value = false;
@@ -67,7 +73,6 @@ class HomeController extends GetxController {
   }
 
   Future<void> cargarPagosPrevios() async {
-    final db = LocalDBService();
     final data = await db.getAll("pagos.json");
     pagosPrevios.value = data.map((json) => Pago.fromJson(json)).toList();
   }
@@ -105,7 +110,6 @@ class HomeController extends GetxController {
 
   Future<String> obtenerNombreAuto(String chapa) async {
     try {
-      final db = LocalDBService();
       final autos = await db.getAll("autos.json");
       final auto = autos.firstWhere(
         (a) => a['chapa'] == chapa,
@@ -120,7 +124,6 @@ class HomeController extends GetxController {
 
   Future<String> obtenerPisoLugar(String codigoLugar) async {
     try {
-      final db = LocalDBService();
       final lugares = await db.getAll("lugares.json");
       final lugar = lugares.firstWhere(
         (l) => l['codigoLugar'] == codigoLugar,
@@ -160,5 +163,37 @@ class HomeController extends GetxController {
   // Método para obtener reservas pagadas
   List<Reserva> obtenerReservasPagadas() {
     return reservasPrevias.where((reserva) => reserva.estadoReserva == 'PAGADO').toList();
+  }
+
+  void actualizarContadores() {
+    final ahora = DateTime.now();
+    mesActual.value = _obtenerNombreMes(ahora.month);
+    
+    // Filtrar reservas del mes actual
+    final reservasDelMes = reservasPrevias.where((reserva) {
+      return reserva.horarioInicio.year == ahora.year && 
+             reserva.horarioInicio.month == ahora.month;
+    }).toList();
+
+    // Contar por estado
+    transaccionesPendientes.value = reservasDelMes
+        .where((r) => r.estadoReserva == 'PENDIENTE')
+        .length;
+    
+    transaccionesCanceladas.value = reservasDelMes
+        .where((r) => r.estadoReserva == 'CANCELADO')
+        .length;
+    
+    transaccionesPagadas.value = reservasDelMes
+        .where((r) => r.estadoReserva == 'PAGADO')
+        .length;
+  }
+
+  String _obtenerNombreMes(int mes) {
+    final meses = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    return meses[mes - 1];
   }
 }
