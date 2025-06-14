@@ -53,10 +53,14 @@ Aplicación móvil para gestión de estacionamiento inteligente.
 ---
 ## Diseño home
 ![image](https://github.com/user-attachments/assets/cf59966f-37ed-4939-ba3f-3809b74f3815)
+
 ![image](https://github.com/user-attachments/assets/e8405c59-7d88-40d9-b92e-e725032121b6)
+
 ![image](https://github.com/user-attachments/assets/64db2733-7eba-4786-b88b-7504801d1bc9)
+
 ![image](https://github.com/user-attachments/assets/46c65587-5766-4cf5-80a9-6d05e6063432)
-![image](https://github.com/user-attachments/assets/46c65587-5766-4cf5-80a9-6d05e6063432)
+
+![image](https://github.com/user-attachments/assets/fd690547-fbde-4fe0-86a5-9fa93763716e)
 
 
 
