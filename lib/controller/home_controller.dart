@@ -8,6 +8,7 @@ import 'package:finpay/model/transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:finpay/controller/alumno/reserva_controller_alumno.dart';
+import 'package:finpay/utils/utiles.dart';
 
 class HomeController extends GetxController {
   List<TransactionModel> transactionList = List<TransactionModel>.empty().obs;
@@ -23,13 +24,28 @@ class HomeController extends GetxController {
   final transaccionesPagadas = 0.obs;
   final mesActual = ''.obs;
   final autosCliente = <Auto>[].obs;
+  final RxString codigoClienteActual = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
+    print('HomeController onInit: Inicializando...');
+
+    if (Get.isRegistered<ReservaAlumnoController>()) {
+      final reservaAlumnoController = Get.find<ReservaAlumnoController>();
+      codigoClienteActual.value = reservaAlumnoController.codigoClienteActual.value;
+    } else {
+      print('ReservaAlumnoController no registrado. Usando cliente_1 por defecto.');
+      codigoClienteActual.value = 'cliente_1';
+    }
+    print('HomeController onInit: codigoClienteActual: ${codigoClienteActual.value}');
+
     customInit();
     cargarReservasPrevias();
     actualizarReservas();
+    ever(transaccionesPendientes, (_) => print("Pendientes cambiaron: ${transaccionesPendientes.value}"));
+    ever(transaccionesCanceladas, (_) => print("Canceladas cambiaron: ${transaccionesCanceladas.value}"));
+    ever(transaccionesPagadas, (_) => print("Pagadas cambiaron: ${transaccionesPagadas.value}"));
   }
 
   customInit() async {
@@ -79,13 +95,64 @@ class HomeController extends GetxController {
   }
 
   Future<void> cargarReservasPrevias() async {
-    try {
-      final reservaController = Get.find<ReservaAlumnoController>();
-      reservasPrevias.value = reservaController.reservasPrevias;
-    } catch (e) {
-      print("Error al cargar reservas previas: $e");
+    print('=== INICIO CARGA DE RESERVAS PREVIAS ===');
+    print('cargarReservasPrevias: codigoClienteActual: ${codigoClienteActual.value}');
+    if (codigoClienteActual.value.isEmpty) {
+      print('ERROR: codigoClienteActual está vacío en cargarReservasPrevias.');
       reservasPrevias.value = [];
+      return;
     }
+    try {
+      final allReservas = await db.getAll("reservas.json");
+      print('Total reservas cargadas (raw): ${allReservas.length}');
+      print('Reservas raw: $allReservas');
+
+      final allAutos = await db.getAll("autos.json");
+      print('Autos raw: $allAutos');
+      
+      final autosCliente = allAutos.where((auto) {
+        final autoClienteId = auto['clienteId'];
+        print('  Evaluando auto: ${auto['chapa']} - clienteId en JSON: $autoClienteId (Tipo: ${autoClienteId.runtimeType})');
+        print('  codigoClienteActual: ${codigoClienteActual.value} (Tipo: ${codigoClienteActual.value.runtimeType})');
+        final match = (autoClienteId is String) && (autoClienteId == codigoClienteActual.value);
+        print('  Coincidencia: $match');
+        return match;
+      }).toList();
+      print('Autos del cliente (en cargarReservasPrevias): ${autosCliente.length}');
+      print('Contenido de autosCliente (en cargarReservasPrevias): $autosCliente');
+      
+      if (autosCliente.isEmpty) {
+        print('No se encontraron autos para el cliente en cargarReservasPrevias.');
+        reservasPrevias.value = [];
+        return;
+      }
+      
+      // Obtener todas las chapas de los autos del cliente
+      final chapasDeCliente = autosCliente.map((auto) => auto['chapa']).toSet();
+      print('Chapas de todos los autos del cliente (en cargarReservasPrevias): $chapasDeCliente');
+
+      // Filtrar reservas que pertenezcan a cualquiera de los autos del cliente
+      final filteredReservas = allReservas.where((reserva) =>
+        chapasDeCliente.contains(reserva['chapaAuto'])
+      ).toList();
+      print('Reservas filtradas por chapas de cliente (en cargarReservasPrevias): ${filteredReservas.length}');
+
+      List<Reserva> parsedReservas = [];
+      for (var json in filteredReservas) {
+        try {
+          parsedReservas.add(Reserva.fromJson(json));
+        } catch (e) {
+          print('Error parseando reserva en cargarReservasPrevias: $json. Error: $e');
+        }
+      }
+      reservasPrevias.value = parsedReservas.toSet().toList();
+      print('Total reservas convertidas a objetos: ${reservasPrevias.length}');
+      actualizarReservas();
+    } catch (e, stackTrace) {
+      print('Error al cargar reservas previas: $e');
+      print('Stack trace cargarReservasPrevias: $stackTrace');
+    }
+    print('=== CARGA DE RESERVAS PREVIAS COMPLETADA ===');
   }
 
   String obtenerEstadoReserva(Reserva reserva) {
@@ -140,72 +207,125 @@ class HomeController extends GetxController {
 
   Future<void> actualizarReservas() async {
     try {
-      final data = await db.getAll("reservas.json");
-      final reservas = data.map((json) => Reserva.fromJson(json)).toList();
-      
-      // Filtrar reservas por la chapa del primer auto del cliente
-      if (autosCliente.isNotEmpty) {
-        final chapaAuto = autosCliente[0].chapa;
-        reservasPrevias.value = reservas
-            .where((r) => r.chapaAuto == chapaAuto)
-            .toList();
-      } else {
-        reservasPrevias.value = reservas;
+      print('=== INICIO ACTUALIZACIÓN DE RESERVAS ===');
+      print('actualizarReservas: codigoClienteActual: ${codigoClienteActual.value}');
+      if (codigoClienteActual.value.isEmpty) {
+        print('ERROR: codigoClienteActual está vacío en actualizarReservas. Reiniciando contadores.');
+        transaccionesPendientes.value = 0;
+        transaccionesCanceladas.value = 0;
+        transaccionesPagadas.value = 0;
+        mesActual.value = ''; 
+        return;
       }
+      final fechaActual = DateTime.now();
+      print('Fecha actual: $fechaActual');
+      
+      // Las reservas ya están en reservasPrevias como objetos Reserva
+      final List<Reserva> reservasObj = reservasPrevias.toList(); 
+      print('Total reservas en sistema (desde actualizarReservas): ${reservasObj.length}');
+      
+      // Obtener el primer auto del cliente
+      final autos = await db.getAll("autos.json");
+      print('Autos raw (en actualizarReservas): $autos');
+      final autosCliente = autos.where((auto) {
+        final autoClienteId = auto['clienteId'];
+        print('  Evaluando auto (en actualizarReservas): ${auto['chapa']} - clienteId en JSON: $autoClienteId (Tipo: ${autoClienteId.runtimeType})');
+        print('  codigoClienteActual: ${codigoClienteActual.value} (Tipo: ${codigoClienteActual.value.runtimeType})');
+        final match = (autoClienteId is String) && (autoClienteId == codigoClienteActual.value);
+        print('  Coincidencia: $match');
+        return match;
+      }).toList();
+      print('Autos del cliente (en actualizarReservas - después del filtro): ${autosCliente.length}');
+      print('Contenido de autosCliente (en actualizarReservas): $autosCliente');
+      
+      if (autosCliente.isEmpty) {
+        print('No se encontraron autos para el cliente en actualizarReservas. Reiniciando contadores.');
+        transaccionesPendientes.value = 0;
+        transaccionesCanceladas.value = 0;
+        transaccionesPagadas.value = 0;
+        mesActual.value = ''; 
+        return;
+      }
+      
+      // No es necesario filtrar por un solo auto aquí, iteraremos sobre todas las reservas del cliente
+      // final primerAuto = autosCliente.first;
+      // final chapaPrimerAuto = primerAuto['chapa'];
+      // print('Filtrando reservas para auto: $chapaPrimerAuto');
+      
+      // Obtener mes y año actual
+      final mesActualNum = fechaActual.month; // Re-declarar mesActualNum
+      final anioActual = fechaActual.year; // Re-declarar anioActual
+      print('Período actual: $mesActualNum/$anioActual');
 
-      // Actualizar contadores de vehículos por estado
-      final ahora = DateTime.now();
-      final mesActual = ahora.month;
-      final anioActual = ahora.year;
-
-      // Reiniciar contadores
+      // Reiniciar contadores locales
       int pendientes = 0;
-      int cancelados = 0;
-      int pagados = 0;
+      int canceladas = 0;
+      int pagadas = 0;
+      
+      print('=== CONTANDO RESERVAS POR ESTADO ===');
+      // Contar reservas por estado para el mes actual, para todos los autos del cliente
+      final chapasDeCliente = autosCliente.map((auto) => auto['chapa']).toSet();
+      print('Chapas de los autos del cliente: $chapasDeCliente');
 
-      // Contar reservas por estado para el mes actual
-      for (var reserva in reservas) {
-        if (reserva.horarioInicio.month == mesActual && 
-            reserva.horarioInicio.year == anioActual) {
-          switch (reserva.estadoReserva.toUpperCase()) {
-            case "PENDIENTE":
+      for (var reserva in reservasObj) {
+        if (!chapasDeCliente.contains(reserva.chapaAuto)) {
+          // Esta reserva no pertenece a un auto del cliente actual
+          continue;
+        }
+
+        final fechaReserva = reserva.horarioInicio; // Ya es DateTime
+        final mesReserva = fechaReserva.month;
+        final anioReserva = fechaReserva.year;
+
+        // Debugging de la fecha de la reserva
+        print('  Evaluando reserva ${reserva.codigoReserva}: Fecha ${UtilesApp.formatearFechaDdMMAaaa(fechaReserva)}, Estado ${reserva.estadoReserva}'); // Usar UtilesApp.formatearFechaDdMMAaaa
+        print('  Mes/Año Reserva: $mesReserva/$anioReserva. Mes/Año Actual: $mesActualNum/$anioActual');
+
+        if (mesReserva == mesActualNum && anioReserva == anioActual) {
+          final estado = reserva.estadoReserva.toUpperCase();
+          print('  --> Contando: Reserva ${reserva.codigoReserva} - Estado: $estado. Monto: ${reserva.monto}');
+          
+          switch (estado) {
+            case 'PENDIENTE':
               pendientes++;
               break;
-            case "CANCELADO":
-            case "CANCELADA":
-              cancelados++;
+            case 'CANCELADO':
+            case 'CANCELADA':
+              canceladas++;
               break;
-            case "PAGADO":
-              pagados++;
+            case 'PAGADO':
+              pagadas++;
               break;
           }
         }
       }
-
-      // Actualizar los contadores
+      
+      // Actualizar contadores observables
       transaccionesPendientes.value = pendientes;
-      transaccionesCanceladas.value = cancelados;
-      transaccionesPagadas.value = pagados;
-
+      transaccionesCanceladas.value = canceladas;
+      transaccionesPagadas.value = pagadas;
+      
       // Actualizar el mes actual
       final meses = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
       ];
-      this.mesActual.value = meses[mesActual - 1];
-
-      print('Contadores actualizados:');
-      print('Pendientes: $pendientes');
-      print('Cancelados: $cancelados');
-      print('Pagados: $pagados');
-      print('Total: ${pendientes + cancelados + pagados}');
-
-    } catch (e) {
+      mesActual.value = meses[mesActualNum - 1];
+      
+      print('=== RESUMEN DE CONTADORES ===');
+      print('Pendientes: ${transaccionesPendientes.value}');
+      print('Canceladas: ${transaccionesCanceladas.value}');
+      print('Pagadas: ${transaccionesPagadas.value}');
+      print('Total: ${transaccionesPendientes.value + transaccionesCanceladas.value + transaccionesPagadas.value}');
+      print('Mes actual actualizado: ${mesActual.value}');
+      print('=== ACTUALIZACIÓN COMPLETADA ===');
+      
+    } catch (e, stackTrace) {
       print('Error al actualizar reservas: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 
-  // Método para obtener la cantidad de pagos del mes actual
   int obtenerPagosDelMesActual() {
     final ahora = DateTime.now();
     final inicioMes = DateTime(ahora.year, ahora.month, 1);
@@ -218,12 +338,10 @@ class HomeController extends GetxController {
     }).length;
   }
 
-  // Método para obtener reservas pendientes
   List<Reserva> obtenerReservasPendientes() {
     return reservasPrevias.where((reserva) => reserva.estadoReserva == 'PENDIENTE').toList();
   }
 
-  // Método para obtener reservas pagadas
   List<Reserva> obtenerReservasPagadas() {
     return reservasPrevias.where((reserva) => reserva.estadoReserva == 'PAGADO').toList();
   }
@@ -232,13 +350,11 @@ class HomeController extends GetxController {
     final ahora = DateTime.now();
     mesActual.value = _obtenerNombreMes(ahora.month);
     
-    // Filtrar reservas del mes actual
     final reservasDelMes = reservasPrevias.where((reserva) {
       return reserva.horarioInicio.year == ahora.year && 
              reserva.horarioInicio.month == ahora.month;
     }).toList();
 
-    // Contar por estado
     transaccionesPendientes.value = reservasDelMes
         .where((r) => r.estadoReserva == 'PENDIENTE')
         .length;

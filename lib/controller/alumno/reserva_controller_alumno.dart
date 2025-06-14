@@ -16,7 +16,7 @@ class ReservaAlumnoController extends GetxController {
   final lugaresDisponibles = <Lugar>[].obs;
   final reservasPorDia = <DateTime, List<Reserva>>{}.obs;
   final db = LocalDBService();
-  String codigoClienteActual = 'cliente_1';
+  final codigoClienteActual = 'cliente_1'.obs;
   late final HomeController homeController;
   final reservaConfirmada = false.obs;
   final reservasPrevias = <Reserva>[].obs;
